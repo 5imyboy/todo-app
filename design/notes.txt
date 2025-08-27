@@ -1,0 +1,12 @@
+Data
+- task
+
+task fields
+- id
+- title
+- description
+- status (not started, in progress, completed)
+- time estimated
+
+enhancement ideas
+- repeatable tasks (ex: water plants)
