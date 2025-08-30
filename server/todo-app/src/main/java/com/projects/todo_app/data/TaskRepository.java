@@ -10,7 +10,7 @@ public interface TaskRepository {
 
     List<Task> findByStatus(Status status);
 
-    Task findById();
+    Task findById(int taskId);
 
     Task add();
 

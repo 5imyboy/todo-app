@@ -2,7 +2,9 @@ package com.projects.todo_app.data;
 
 import com.projects.todo_app.models.Status;
 import com.projects.todo_app.models.Task;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -16,29 +18,41 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private final RowMapper<Task> mapper = (ResultSet resultSet, int rowNum) -> {
+        return new Task(
+                resultSet.getInt("task_id"),
+                resultSet.getString("title"),
+                resultSet.getString("description"),
+                Status.findByTitle(resultSet.getString("status")),
+                resultSet.getInt("hours"),
+                resultSet.getInt("minutes")
+        );
+    };
+
     @Override
     public List<Task> findAll() {
         final String sql = "select task_id, title, description, status, hours, minutes from task";
-        return jdbcTemplate.query(sql, (ResultSet resultSet, int rowNum) -> {
-            return new Task(
-                    resultSet.getInt("task_id"),
-                    resultSet.getString("title"),
-                    resultSet.getString("description"),
-                    Status.findByTitle(resultSet.getString("status")),
-                    resultSet.getInt("hours"),
-                    resultSet.getInt("minutes")
-            );
-        });
+        return jdbcTemplate.query(sql, mapper);
     }
 
     @Override
     public List<Task> findByStatus(Status status) {
-        return List.of();
+        final String sql = "select task_id, title, description, status, hours, minutes from task where status = ?";
+        try {
+            return jdbcTemplate.query(sql, mapper, Status.titleToString(status));
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     @Override
-    public Task findById() {
-        return null;
+    public Task findById(int taskId) {
+        final String sql = "select task_id, title, description, status, hours, minutes from task where task_id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, mapper, taskId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     @Override

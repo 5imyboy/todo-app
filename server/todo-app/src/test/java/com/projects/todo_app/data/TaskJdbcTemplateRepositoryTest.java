@@ -1,5 +1,6 @@
 package com.projects.todo_app.data;
 
+import com.projects.todo_app.models.Status;
 import com.projects.todo_app.models.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,31 @@ class TaskJdbcTemplateRepositoryTest {
             assertNotNull(task.getTitle());
             assertNotNull(task.getStatus());
         }
+    }
+
+    @Test
+    void shouldFindByStatus() {
+        List<Task> actual = repository.findByStatus(Status.IN_PROGRESS);
+        assertNotNull(actual);
+
+        for (Task task: actual) {
+            assertNotEquals(0, task.getTaskId());
+            assertNotNull(task.getTitle());
+            assertEquals(Status.IN_PROGRESS, task.getStatus());
+        }
+    }
+
+    @Test
+    void shouldFindById() {
+        Task actual = repository.findById(1);
+        assertNotNull(actual);
+        assertEquals(1, actual.getTaskId());
+    }
+
+    @Test
+    void shouldNotFindMissingId() {
+        Task actual = repository.findById(999);
+        assertNull(actual);
     }
 
 }

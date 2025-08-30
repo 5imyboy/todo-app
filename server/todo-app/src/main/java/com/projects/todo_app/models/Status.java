@@ -26,4 +26,13 @@ public enum Status {
             default -> throw new IllegalArgumentException("Invalid Status: " + title);
         };
     }
+
+    public static String titleToString(Status status) {
+        return switch (status.id) {
+            case 1 -> "NOT_STARTED";
+            case 2 -> "IN_PROGRESS";
+            case 3 -> "COMPLETED";
+            default -> throw new IllegalArgumentException("Status not found");
+        };
+    }
 }
