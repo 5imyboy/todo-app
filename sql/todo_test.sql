@@ -17,9 +17,9 @@ delimiter //
 create procedure set_good_known_state()
 begin
     -- Resets the auto_increment value.
-	truncate table todo;
+	truncate table task;
     
-    insert into todo
+    insert into task
     values
 		(1, "Clean Room", "Make the bed and vaccum the floor", 'NOT_STARTED', 2, 0),
 		(2, "Brush Teeth", "Brush for at least 3 minutes!", 'IN_PROGRESS', 0, 10),

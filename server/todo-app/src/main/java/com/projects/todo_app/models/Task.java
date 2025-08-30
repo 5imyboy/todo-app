@@ -8,7 +8,7 @@ public class Task {
     private int hours;
     private int minutes;
 
-    Task(int task_id, String title, String description, Status status, int hours, int minutes) {
+    public Task(int task_id, String title, String description, Status status, int hours, int minutes) {
         this.task_id = task_id;
         this.title = title;
         this.description = description;
@@ -57,11 +57,11 @@ public class Task {
         this.title = title;
     }
 
-    public int getTask_id() {
+    public int getTaskId() {
         return task_id;
     }
 
-    public void setTask_id(int task_id) {
+    public void setTaskId(int task_id) {
         this.task_id = task_id;
     }
 }

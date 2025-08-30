@@ -5,6 +5,7 @@ import com.projects.todo_app.models.Task;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
@@ -17,7 +18,17 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll() {
-        return List.of();
+        final String sql = "select task_id, title, description, status, hours, minutes from task";
+        return jdbcTemplate.query(sql, (ResultSet resultSet, int rowNum) -> {
+            return new Task(
+                    resultSet.getInt("task_id"),
+                    resultSet.getString("title"),
+                    resultSet.getString("description"),
+                    Status.findByTitle(resultSet.getString("status")),
+                    resultSet.getInt("hours"),
+                    resultSet.getInt("minutes")
+            );
+        });
     }
 
     @Override

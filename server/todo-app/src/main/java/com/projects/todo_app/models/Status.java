@@ -17,4 +17,13 @@ public enum Status {
     public String toString() {
         return name;
     }
+
+    public static Status findByTitle(String title) {
+        return switch (title) {
+            case "NOT_STARTED" -> Status.values()[0];
+            case "IN_PROGRESS" -> Status.values()[1];
+            case "COMPLETED" -> Status.values()[2];
+            default -> throw new IllegalArgumentException("Invalid Status: " + title);
+        };
+    }
 }
