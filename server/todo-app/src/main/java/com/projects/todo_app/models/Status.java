@@ -28,6 +28,7 @@ public enum Status {
     }
 
     public static String titleToString(Status status) {
+        if (status == null) { return null; }
         return switch (status.id) {
             case 1 -> "NOT_STARTED";
             case 2 -> "IN_PROGRESS";

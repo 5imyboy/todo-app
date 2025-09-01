@@ -8,6 +8,8 @@ public class Task {
     private int hours;
     private int minutes;
 
+    public Task() {}
+
     public Task(int task_id, String title, String description, Status status, int hours, int minutes) {
         this.task_id = task_id;
         this.title = title;

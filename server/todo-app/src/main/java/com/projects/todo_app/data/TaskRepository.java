@@ -12,7 +12,7 @@ public interface TaskRepository {
 
     Task findById(int taskId);
 
-    Task add();
+    Task add(Task task);
 
     boolean update(Task task);
 

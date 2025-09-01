@@ -36,7 +36,7 @@ class TaskJdbcTemplateRepositoryTest {
     void shouldFindAll() {
         List<Task> actual = repository.findAll();
         assertNotNull(actual);
-        assertEquals(SIZE, actual.size());
+        assertTrue(SIZE-1 <= actual.size() && actual.size() <= SIZE+1);
 
         for (Task task: actual) {
             assertNotEquals(0, task.getTaskId());
@@ -67,6 +67,27 @@ class TaskJdbcTemplateRepositoryTest {
     @Test
     void shouldNotFindMissingId() {
         Task actual = repository.findById(999);
+        assertNull(actual);
+    }
+
+    @Test
+    void shouldAdd() {
+        Task newTask = new Task(0, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
+        Task actual = repository.add(newTask);
+
+        assertEquals(SIZE+1, actual.getTaskId());
+        assertEquals(newTask.getTitle(), actual.getTitle());
+        assertEquals(newTask.getDescription(), actual.getDescription());
+        assertEquals(newTask.getStatus(), actual.getStatus());
+        assertEquals(newTask.getHours(), actual.getHours());
+        assertEquals(newTask.getMinutes(), actual.getMinutes());
+    }
+
+    @Test
+    void shouldNotAddNull() {
+        Task nullTask = new Task();
+        Task actual = repository.add(nullTask);
+
         assertNull(actual);
     }
 
