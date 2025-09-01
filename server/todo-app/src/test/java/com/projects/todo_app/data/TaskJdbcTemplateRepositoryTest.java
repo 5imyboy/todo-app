@@ -76,11 +76,7 @@ class TaskJdbcTemplateRepositoryTest {
         Task actual = repository.add(newTask);
 
         assertEquals(SIZE+1, actual.getTaskId());
-        assertEquals(newTask.getTitle(), actual.getTitle());
-        assertEquals(newTask.getDescription(), actual.getDescription());
-        assertEquals(newTask.getStatus(), actual.getStatus());
-        assertEquals(newTask.getHours(), actual.getHours());
-        assertEquals(newTask.getMinutes(), actual.getMinutes());
+        assertTrue(taskEquals(newTask, actual));
     }
 
     @Test
@@ -91,4 +87,22 @@ class TaskJdbcTemplateRepositoryTest {
         assertNull(actual);
     }
 
+    @Test
+    void shouldUpdate() {
+        Task newTask = new Task(1, "Wash Dishes", "", Status.NOT_STARTED, 0, 30);
+        assertTrue(repository.update(newTask));
+        Task actual = repository.findById(1);
+
+        assertTrue(taskEquals(newTask, actual));
+    }
+
+    // HELPER FUNCTIONS
+    boolean taskEquals(Task taskOne, Task taskTwo) {
+        if (!taskOne.getTitle().equals(taskTwo.getTitle())) return false;
+        if (!taskOne.getDescription().equals(taskTwo.getDescription())) return false;
+        if (taskOne.getStatus() != taskTwo.getStatus()) return false;
+        if (taskOne.getHours() != taskTwo.getHours()) return false;
+        if (taskOne.getMinutes() != taskTwo.getMinutes()) return false;
+        return true;
+    }
 }

@@ -5,7 +5,6 @@ import com.projects.todo_app.models.Task;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -35,13 +34,13 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll() {
-        final String sql = "select task_id, title, description, status, hours, minutes from task";
+        final String sql = "select task_id, title, `description`, `status`, hours, minutes from task";
         return jdbcTemplate.query(sql, mapper);
     }
 
     @Override
     public List<Task> findByStatus(Status status) {
-        final String sql = "select task_id, title, description, status, hours, minutes from task where status = ?";
+        final String sql = "select task_id, title, `description`, `status`, hours, minutes from task where status = ?";
         try {
             return jdbcTemplate.query(sql, mapper, Status.titleToString(status));
         } catch (EmptyResultDataAccessException ex) {
@@ -51,7 +50,7 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public Task findById(int taskId) {
-        final String sql = "select task_id, title, description, status, hours, minutes from task where task_id = ?";
+        final String sql = "select task_id, title, `description`, `status`, hours, minutes from task where task_id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, mapper, taskId);
         } catch (EmptyResultDataAccessException ex) {
@@ -61,7 +60,7 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public Task add(Task task) {
-        final String sql = "insert into task (title, description, status, hours, minutes) values (?, ?, ?, ?, ?)";
+        final String sql = "insert into task (title, `description`, `status`, hours, minutes) values (?, ?, ?, ?, ?)";
 
         // preparedStatement: https://docs.spring.io/spring-framework/docs/4.3.x/spring-framework-reference/html/jdbc.html
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -87,7 +86,18 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public boolean update(Task task) {
-        return false;
+        final String sql = "update task set " +
+                "title = ?, " +
+                "`description` = ?, " +
+                "`status` = ?, " +
+                "hours = ?, " +
+                "minutes = ? where task_id = ?";
+        int rowsUpdated = jdbcTemplate.update(sql,
+                task.getTitle(), task.getDescription(),
+                Status.titleToString(task.getStatus()),
+                task.getHours(), task.getMinutes(),
+                task.getTaskId());
+        return rowsUpdated > 0;
     }
 
     @Override
