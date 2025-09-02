@@ -96,6 +96,22 @@ class TaskJdbcTemplateRepositoryTest {
         assertTrue(taskEquals(newTask, actual));
     }
 
+    @Test
+    void shouldNotUpdateMissing() {
+        Task missingTask = new Task(99, "Wash Dishes", "", Status.NOT_STARTED, 0, 30);
+        assertFalse(repository.update(missingTask));
+    }
+
+    @Test
+    void shouldDelete() {
+        assertTrue(repository.deleteById(2));
+    }
+
+    @Test
+    void shouldNotDeleteMissing() {
+        assertFalse(repository.deleteById(99));
+    }
+
     // HELPER FUNCTIONS
     boolean taskEquals(Task taskOne, Task taskTwo) {
         if (!taskOne.getTitle().equals(taskTwo.getTitle())) return false;

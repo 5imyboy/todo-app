@@ -102,6 +102,7 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public boolean deleteById(long taskId) {
-        return false;
+        final String sql = "delete from task where task_id = ?";
+        return jdbcTemplate.update(sql, taskId) > 0;
     }
 }
