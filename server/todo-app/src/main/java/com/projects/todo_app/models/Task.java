@@ -1,9 +1,16 @@
 package com.projects.todo_app.models;
 
+import com.projects.todo_app.domain.custom_validation.TimeExists;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+@TimeExists(message = "Time cannot be blank")
 public class Task {
     private int task_id;
+    @NotBlank(message = "Task title cannot be blank")
     private String title;
     private String description;
+    @NotNull(message = "Task status cannot be blank")
     private Status status;
     private int hours;
     private int minutes;

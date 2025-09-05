@@ -26,3 +26,5 @@ begin
 		(3, "Wake Up", "", 'COMPLETED', 0, 5);
 end //
 delimiter ;
+
+SELECT task_id, title, description, status, hours, minutes from task;

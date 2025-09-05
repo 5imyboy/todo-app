@@ -9,6 +9,7 @@ Make Result type abstract for future scalability
 public class Result<T> {
     private final List<String> messages = new ArrayList<>();
     private ResultType type = ResultType.SUCCESS;
+    private T payload;
 
     public List<String> getMessages() {
         return messages;
@@ -18,12 +19,20 @@ public class Result<T> {
         return type;
     }
 
-    private void addMessage(String message, ResultType type) {
+    public T getPayload() {
+        return payload;
+    }
+
+    public void addMessage(String message, ResultType type) {
         messages.add(message);
         this.type = type;
     }
 
-    private void addErrorMessage(String message) {
+    public void addErrorMessage(String message) {
         addMessage(message, ResultType.INVALID);
+    }
+
+    public void setPayLoad(T payload) {
+        this.payload = payload;
     }
 }
