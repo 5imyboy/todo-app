@@ -13,6 +13,7 @@ import java.util.Set;
 public class TaskService {
 
     private final TaskRepository repository;
+    private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
     public TaskService(TaskRepository repository) {
         this.repository = repository;
@@ -33,15 +34,14 @@ public class TaskService {
     public Result<Task> add(Task task) {
         Result<Task> result = new Result<>();
 
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Task>> violations = validator.validate(task);
 
         if (!violations.isEmpty()) {
             for (ConstraintViolation<Task> violation: violations) {
                 result.addErrorMessage(violation.getMessage());
-                return result;
             }
+            return result;
         }
 
         // I can't figure out how to use annotations to configure this piece of validation
@@ -54,18 +54,49 @@ public class TaskService {
 
     }
 
-    public boolean update(Task task) {
-        return repository.update(task);
+    public Result<Task> update(Task task) {
+        Result<Task> result = new Result<>();
+
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Task>> violations = validator.validate(task);
+        if (!violations.isEmpty()) {
+            for (ConstraintViolation<Task> violation: violations) {
+                result.addErrorMessage(violation.getMessage());
+            }
+            return result;
+        }
+
+        if (!isTitleUnique(task.getTitle(), task.getTaskId())) {
+            result.addErrorMessage("Title must be unique");
+            return result;
+        }
+
+        if (!repository.update(task)) {
+            result.addMessage(
+                    String.format("task id: %s, not found", task.getTaskId()),
+                    ResultType.NOT_FOUND
+            );
+            return result;
+        }
+
+        result.setPayLoad(task);
+        return result;
     }
 
     public boolean deleteById(long taskId) {
         return repository.deleteById(taskId);
     }
 
+
     // Validation helper functions
-    private  boolean isTitleUnique(String title) {
+    private boolean isTitleUnique(String title) {
+        return isTitleUnique(title, -1);
+    }
+
+    private boolean isTitleUnique(String title, int idToIgnore) {
         List<Task> tasks = findAll();
         for (Task task: tasks) {
+            if (task.getTaskId() == idToIgnore) continue;
             if (task.getTitle().equals(title)) {
                 return false;
             }

@@ -54,4 +54,42 @@ class TaskServiceTest {
         assertEquals(ResultType.INVALID, actual.getType());
     }
 
+    @Test
+    void shouldUpdate() {
+        Task newTask = new Task(1, "Wash Dishes Again", "", Status.NOT_STARTED, 0, 30);
+        Result<Task> actual = service.update(newTask);
+        assertEquals(ResultType.SUCCESS, actual.getType());
+    }
+
+    @Test
+    void shouldNotUpdateMissingFields() {
+        Task blankTitle = new Task(1, "", "", Status.NOT_STARTED, 0, 20);
+        Task nullTitle = new Task(1, null, "", Status.NOT_STARTED, 0, 20);
+        Task nullStatus = new Task(1, "Go for a Walk", "", null, 0, 20);
+
+        Result<Task> actual = service.update(blankTitle);
+        assertEquals(ResultType.INVALID, actual.getType());
+
+        actual = service.update(nullTitle);
+        assertEquals(ResultType.INVALID, actual.getType());
+
+        actual = service.update(nullStatus);
+        assertEquals(ResultType.INVALID, actual.getType());
+    }
+
+    @Test
+    void shouldNotUpdateMissingTime() {
+        Task emptyTime = new Task(1, "Go for a Walk", "", Status.NOT_STARTED, 0, 0);
+        Result<Task> actual = service.update(emptyTime);
+
+        assertEquals(ResultType.INVALID, actual.getType());
+    }
+
+    @Test
+    void shouldNotUpdateMissingId() {
+        Task missing = new Task(99, "Missing Task", "", Status.NOT_STARTED, 0, 30);
+        Result<Task> actual = service.update(missing);
+        assertEquals(ResultType.NOT_FOUND, actual.getType());
+    }
+
 }
