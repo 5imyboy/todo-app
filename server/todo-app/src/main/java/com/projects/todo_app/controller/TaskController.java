@@ -59,4 +59,25 @@ public class TaskController {
         }
         return new ResponseEntity<>(result.getPayload(), HttpStatus.CREATED);
     }
+
+    @PutMapping("/task/update/{taskId}")
+    public ResponseEntity<?> updateTask(@RequestBody Task task, @PathVariable int taskId) {
+        if (task.getTaskId() != taskId) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        Result<Task> result = service.update(task);
+        return switch(result.getType()) {
+            case INVALID -> new ResponseEntity<>(result.getMessages(), HttpStatus.BAD_REQUEST);
+            case NOT_FOUND -> new ResponseEntity<>(result.getMessages(), HttpStatus.NOT_FOUND);
+            default -> new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        };
+    }
+
+    @DeleteMapping("/task/delete/{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable int taskId) {
+        if (!service.deleteById(taskId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

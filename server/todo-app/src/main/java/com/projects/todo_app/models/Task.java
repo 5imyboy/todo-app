@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 @TimeExists(message = "Time cannot be blank")
 public class Task {
-    private int task_id;
+    private int taskId;
     @NotBlank(message = "Task title cannot be blank")
     private String title;
     private String description;
@@ -17,8 +17,8 @@ public class Task {
 
     public Task() {}
 
-    public Task(int task_id, String title, String description, Status status, int hours, int minutes) {
-        this.task_id = task_id;
+    public Task(int taskId, String title, String description, Status status, int hours, int minutes) {
+        this.taskId = taskId;
         this.title = title;
         this.description = description;
         this.status = status;
@@ -67,10 +67,10 @@ public class Task {
     }
 
     public int getTaskId() {
-        return task_id;
+        return taskId;
     }
 
-    public void setTaskId(int task_id) {
-        this.task_id = task_id;
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
     }
 }
