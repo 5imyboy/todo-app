@@ -3,14 +3,12 @@ package com.projects.todo_app.controller;
 import com.projects.todo_app.domain.Result;
 import com.projects.todo_app.domain.ResultType;
 import com.projects.todo_app.domain.TaskService;
+import com.projects.todo_app.models.Status;
 import com.projects.todo_app.models.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -21,14 +19,35 @@ public class TaskController {
     @Autowired
     TaskService service;
 
-    @GetMapping("/")
-    public String Hello() {
-        return "Hello World";
-    }
-
     @GetMapping("/task")
     public ResponseEntity<?> findTasks() {
         List<Task> tasks = service.findAll();
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/task/id/{taskId}")
+    public ResponseEntity<?> findTaskById(@PathVariable int taskId) {
+        Task task = service.findById(taskId);
+        return ResponseEntity.ok(task);
+    }
+
+    @GetMapping("/task/status/{statusString}")
+    public ResponseEntity<?> findTasksByStatus(@PathVariable String statusString) {
+        Status status;
+        switch (statusString) {
+            case "not-started":
+                status = Status.NOT_STARTED;
+                break;
+            case "in-progress":
+                status = Status.IN_PROGRESS;
+                break;
+            case "completed":
+                status = Status.COMPLETED;
+                break;
+            default:
+                return new ResponseEntity<>("Invalid Status", HttpStatus.BAD_REQUEST);
+        }
+        List<Task> tasks = service.findByStatus(status);
         return ResponseEntity.ok(tasks);
     }
 
