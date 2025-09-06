@@ -1,0 +1,13 @@
+GET http://localhost:8080/task HTTP/1.1
+
+###
+POST http://localhost:8080/task/add HTTP/1.1
+Content-Type: application/json
+
+{
+    "title": "Get out of bed",
+    "description": "don't be late!",
+    "status": "NOT_STARTED",
+    "hours": 0,
+    "minutes": 5
+}

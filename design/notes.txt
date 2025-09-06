@@ -8,5 +8,11 @@ task fields
 - status (not started, in progress, completed)
 - time estimated
 
+domain rules
+- title must exist
+- title must be unique
+- status must exist
+- time must exist (either hours or minutes are filled)
+
 enhancement ideas
 - repeatable tasks (ex: water plants)
