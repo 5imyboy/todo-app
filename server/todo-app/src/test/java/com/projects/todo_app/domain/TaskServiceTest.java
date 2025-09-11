@@ -3,12 +3,15 @@ package com.projects.todo_app.domain;
 import com.projects.todo_app.data.TaskRepository;
 import com.projects.todo_app.models.Status;
 import com.projects.todo_app.models.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class TaskServiceTest {
@@ -19,14 +22,31 @@ class TaskServiceTest {
     @Autowired
     TaskService service;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    private static boolean hasSetUp = false;
+    private final int SIZE = 3;
+
+    @BeforeEach
+    void setup() {
+        if (!hasSetUp) {
+            hasSetUp = true;
+            jdbcTemplate.update("call set_good_known_state();");
+        }
+    }
+
     @Test
     void shouldAddUnique() {
-        Task newTask = new Task(0, "Make Lunch", "", Status.NOT_STARTED, 0, 20);
-        Result<Task> actual = service.add(newTask);
+        Task newTaskIn = new Task(0, "Make Lunch", "", Status.NOT_STARTED, 0, 20);
+        Task newTaskOut = new Task(SIZE+1, "Make Lunch", "", Status.NOT_STARTED, 0, 20);
+        when(repository.add(newTaskIn)).thenReturn(newTaskOut);
 
+        Result<Task> actual = service.add(newTaskIn);
         assertEquals(ResultType.SUCCESS, actual.getType());
+        assertEquals(actual.getPayload(), newTaskOut);
 
-        actual = service.add(newTask);
+        actual = service.add(newTaskIn);
         assertEquals(ResultType.INVALID, actual.getType());
     }
 
@@ -56,9 +76,13 @@ class TaskServiceTest {
 
     @Test
     void shouldUpdate() {
-        Task newTask = new Task(1, "Wash Dishes Again", "", Status.NOT_STARTED, 0, 30);
-        Result<Task> actual = service.update(newTask);
+        Task newTaskIn = new Task(1, "Wash Dishes Again", "", Status.NOT_STARTED, 0, 30);
+        Task newTaskOut = new Task(1, "Wash Dishes Again", "", Status.NOT_STARTED, 0, 30);
+        when(repository.add(newTaskIn)).thenReturn(newTaskOut);
+
+        Result<Task> actual = service.update(newTaskIn);
         assertEquals(ResultType.SUCCESS, actual.getType());
+        assertEquals(actual.getPayload(), newTaskOut);
     }
 
     @Test

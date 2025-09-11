@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class TaskJdbcTemplateRepositoryTest {
 
     @Autowired
@@ -76,7 +76,7 @@ class TaskJdbcTemplateRepositoryTest {
         Task actual = repository.add(newTask);
 
         assertEquals(SIZE+1, actual.getTaskId());
-        assertTrue(taskEquals(newTask, actual));
+        assertEquals(newTask, actual);
     }
 
     @Test
@@ -93,7 +93,7 @@ class TaskJdbcTemplateRepositoryTest {
         assertTrue(repository.update(newTask));
         Task actual = repository.findById(1);
 
-        assertTrue(taskEquals(newTask, actual));
+        assertEquals(newTask, actual);
     }
 
     @Test
@@ -110,15 +110,5 @@ class TaskJdbcTemplateRepositoryTest {
     @Test
     void shouldNotDeleteMissing() {
         assertFalse(repository.deleteById(99));
-    }
-
-    // HELPER FUNCTIONS
-    boolean taskEquals(Task taskOne, Task taskTwo) {
-        if (!taskOne.getTitle().equals(taskTwo.getTitle())) return false;
-        if (!taskOne.getDescription().equals(taskTwo.getDescription())) return false;
-        if (taskOne.getStatus() != taskTwo.getStatus()) return false;
-        if (taskOne.getHours() != taskTwo.getHours()) return false;
-        if (taskOne.getMinutes() != taskTwo.getMinutes()) return false;
-        return true;
     }
 }

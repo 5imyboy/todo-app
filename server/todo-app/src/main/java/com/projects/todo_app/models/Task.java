@@ -4,6 +4,8 @@ import com.projects.todo_app.domain.custom_validation.TimeExists;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Objects;
+
 @TimeExists(message = "Time cannot be blank")
 public class Task {
     private int taskId;
@@ -72,5 +74,17 @@ public class Task {
 
     public void setTaskId(int taskId) {
         this.taskId = taskId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return taskId == task.taskId && hours == task.hours && minutes == task.minutes && Objects.equals(title, task.title) && Objects.equals(description, task.description) && status == task.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskId, title, description, status, hours, minutes);
     }
 }
