@@ -21,7 +21,7 @@ begin
     
     insert into task
     values
-		(1, "Clean Room", "Make the bed and vaccum the floor", 'NOT_STARTED', 2, 0),
+		(1, "Clean Room", "Make the bed and vacumm the floor", 'NOT_STARTED', 2, 0),
 		(2, "Brush Teeth", "Brush for at least 3 minutes!", 'IN_PROGRESS', 0, 10),
 		(3, "Wake Up", "", 'COMPLETED', 0, 5);
 end //
