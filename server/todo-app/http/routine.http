@@ -36,7 +36,7 @@ PUT {{host}}/task/update/1 HTTP/1.1
 Content-Type: application/json
 
 {
-    "taskId": 11,
+    "taskId": 1,
     "title": "Wake Up",
     "description": "don't be late!",
     "status": "COMPLETED",
