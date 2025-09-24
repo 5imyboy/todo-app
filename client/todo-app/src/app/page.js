@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Task from "@/app/ui/task";
+import newTask from "./ui/newTask";
 
 async function loadTasks(url) {
   const init = {
@@ -19,17 +20,19 @@ async function loadTasks(url) {
   }
 }
 
-function handleAdd() {
-  console.log("add task");
-}
-
 export default function Home() {
   const [tasks, setTasks] = useState([]);
   const url = "http://localhost:8080/task";
+  
+  let displayNewTask = false;
 
   useEffect(() => {
     loadTasks(url).then(setTasks);
   }, []);
+
+  function handleAdd() {
+    displayNewTask = true;
+  }
 
   return (
     <div className="grid grid-rows-12 font-sans items-center justify-items-center h-screen p-8 pb-20 gap-4 sm:p-10">
@@ -44,6 +47,7 @@ export default function Home() {
       <main className="row-span-10 h-full w-8/10 grid grid-cols-3 flex flex-row gap-[32px] items-center rounded">
         <div className="bg-sky-400 h-full col-span-1 rounded-2xl">
           {tasks.map(t => t.status === 'NOT_STARTED' ? Task(t) : "")}
+          {newTask(tasks[0], displayNewTask)}
         </div>
         <div className="bg-sky-300 h-full col-span-1 rounded-2xl">
           {tasks.map(t => t.status === 'IN_PROGRESS' ? Task(t) : "")}
