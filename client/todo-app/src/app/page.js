@@ -56,7 +56,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="p-2 fixed right-px bottom-px pr-6 pb-6">
-        <button className="border border-cyan-600 pl-4 pr-4 pb-1 text-6xl rounded-4xl text-white bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-300 hover:bg-gradient-to-br hover:from-cyan-300 hover:to-cyan-500" onClick={handleShowAdd}>
+        <button className="border border-cyan-600 pl-4 pr-4 pb-1 text-6xl rounded-full text-white bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-300 hover:bg-gradient-to-br hover:from-cyan-300 hover:to-cyan-500" onClick={handleShowAdd}>
           +
         </button>
       </footer>

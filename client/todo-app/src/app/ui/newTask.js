@@ -10,6 +10,7 @@ const DEFAULT_TASK = {
   minutes: 0
 }
 
+// adds task to backend SQL server
 async function addTask(task) {
   const init = {
     method: "POST",
@@ -33,6 +34,7 @@ async function addTask(task) {
 export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTasks) {
   let [isTaskSmall, setIsTaskSmall] = useState(true);
   const [task, setTask] = useState(DEFAULT_TASK);
+  const [errors, setErrors] = useState([]);
 
   function toggleSize() {
     const newTask = { ...task }
@@ -55,22 +57,36 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
 
   const handleCancel = () => {
     setDisplayNewTask(false);
+    setErrors([]);
   }
 
   const handleSubmit = (event) => {
     // prevent default form submit
     event.preventDefault();
 
-    setDisplayNewTask(false);
+    // add task and handle errors and updates
     addTask(task).then((data) => {
-      if (data.taskId) {
+      if (data && data.taskId) {
         setTasks([...tasks, task]);
+        setDisplayNewTask(false);
+        setErrors([]);
+      } else {
+        setErrors(data);
       }
     });
   }
 
   return (
     <div className={`bg-neutral-50/25 hover:bg-gray-50/50 m-2 p-2 rounded-xl ${displayNewTask ? "" : "hidden"}`}>
+
+      {errors.length !== 0 && (
+        <div className="p-2 mb-2 text-sm text-red-800 rounded-lg bg-red-200/80 dark:bg-gray-800/80 dark:text-red-400" role="alert">
+          <span className="font-medium">Errors:</span>
+          <ul>
+            {errors.map(e => <li key={e}>{e}</li>)}
+          </ul>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <fieldset>
@@ -81,6 +97,7 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
               name="title"
               className="bg-gray-200/50 w-full text-center"
               placeholder="Title:"
+              maxLength={100}
               onChange={handleChange}
             />
           </div>
@@ -94,6 +111,7 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
               className="w-full bg-gray-200/50"
               placeholder="notes:"
               onChange={handleChange}
+              maxLength={1024}
               rows="3"
             />
           </div>
