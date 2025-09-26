@@ -22,16 +22,15 @@ async function loadTasks(url) {
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
+  const [displayNewTask, setDisplayNewTask] = useState(false);
   const url = "http://localhost:8080/task";
-  
-  let displayNewTask = false;
 
   useEffect(() => {
     loadTasks(url).then(setTasks);
   }, []);
 
-  function handleAdd() {
-    displayNewTask = true;
+  function handleShowAdd() {
+    setDisplayNewTask(true);
   }
 
   return (
@@ -47,7 +46,7 @@ export default function Home() {
       <main className="row-span-10 h-full w-8/10 grid grid-cols-3 flex flex-row gap-[32px] items-center rounded">
         <div className="bg-sky-400 h-full col-span-1 rounded-2xl">
           {tasks.map(t => t.status === 'NOT_STARTED' ? Task(t) : "")}
-          {newTask(tasks[0], displayNewTask)}
+          {newTask(displayNewTask, setDisplayNewTask)}
         </div>
         <div className="bg-sky-300 h-full col-span-1 rounded-2xl">
           {tasks.map(t => t.status === 'IN_PROGRESS' ? Task(t) : "")}
@@ -56,8 +55,8 @@ export default function Home() {
           {tasks.map(t => t.status === 'COMPLETED' ? Task(t) : "")}
         </div>
       </main>
-      <footer className="p-2 absolute right-px bottom-px pr-6 pb-6">
-        <button className="border border-cyan-600 pl-4 pr-4 pb-1 text-6xl rounded-4xl text-white bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-300 hover:bg-gradient-to-br hover:from-cyan-300 hover:to-cyan-500" onClick={handleAdd}>
+      <footer className="p-2 fixed right-px bottom-px pr-6 pb-6">
+        <button className="border border-cyan-600 pl-4 pr-4 pb-1 text-6xl rounded-4xl text-white bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-300 hover:bg-gradient-to-br hover:from-cyan-300 hover:to-cyan-500" onClick={handleShowAdd}>
           +
         </button>
       </footer>
