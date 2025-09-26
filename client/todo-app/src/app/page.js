@@ -46,7 +46,7 @@ export default function Home() {
       <main className="row-span-10 h-full w-8/10 grid grid-cols-3 flex flex-row gap-[32px] items-center rounded">
         <div className="bg-sky-400 h-full col-span-1 rounded-2xl">
           {tasks.map(t => t.status === 'NOT_STARTED' ? Task(t) : "")}
-          {newTask(displayNewTask, setDisplayNewTask)}
+          {newTask(displayNewTask, setDisplayNewTask, tasks, setTasks)}
         </div>
         <div className="bg-sky-300 h-full col-span-1 rounded-2xl">
           {tasks.map(t => t.status === 'IN_PROGRESS' ? Task(t) : "")}

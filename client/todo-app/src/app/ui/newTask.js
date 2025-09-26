@@ -10,7 +10,6 @@ const DEFAULT_TASK = {
   minutes: 0
 }
 
-/*
 async function addTask(task) {
   const init = {
     method: "POST",
@@ -20,9 +19,9 @@ async function addTask(task) {
     body: JSON.stringify(task),
   }
   try {
-    const response = await fetch("http://localhost:8080/task/add/", init);
-    if (response.status !== 201 || response.status !== 400) {
-      return new Promise(`Unexpected Status Code: ${response.status}`)
+    const response = await fetch("http://localhost:8080/task/add", init);
+    if (response.status !== 201 && response.status !== 400) {
+      return Promise.reject(`Unexpected Status Code: ${response.status}`)
     }
     const data = await response.json();
     return data;
@@ -30,9 +29,8 @@ async function addTask(task) {
     console.error(error);
   }
 }
-  */
 
-export default function newTask(displayNewTask, setDisplayNewTask) {
+export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTasks) {
   let [isTaskSmall, setIsTaskSmall] = useState(true);
   const [task, setTask] = useState(DEFAULT_TASK);
 
@@ -59,14 +57,22 @@ export default function newTask(displayNewTask, setDisplayNewTask) {
     setDisplayNewTask(false);
   }
 
-  const handleAdd = () => {
-    //addTask(task);
+  const handleSubmit = (event) => {
+    // prevent default form submit
+    event.preventDefault();
+
+    setDisplayNewTask(false);
+    addTask(task).then((data) => {
+      if (data.taskId) {
+        setTasks([...tasks, task]);
+      }
+    });
   }
 
   return (
     <div className={`bg-neutral-50/25 hover:bg-gray-50/50 m-2 p-2 rounded-xl ${displayNewTask ? "" : "hidden"}`}>
 
-      <form onSubmit={handleAdd}>
+      <form onSubmit={handleSubmit}>
         <fieldset>
           <label htmlFor="title" />
           <div className="m-auto w-6/10 p-2">
