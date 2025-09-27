@@ -57,6 +57,7 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
 
   const handleCancel = () => {
     setDisplayNewTask(false);
+    setTask(DEFAULT_TASK);
     setErrors([]);
   }
 
@@ -67,8 +68,9 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
     // add task and handle errors and updates
     addTask(task).then((data) => {
       if (data && data.taskId) {
-        setTasks([...tasks, task]);
+        setTasks([...tasks, data]);
         setDisplayNewTask(false);
+        setTask(DEFAULT_TASK);
         setErrors([]);
       } else {
         setErrors(data);
@@ -97,6 +99,7 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
               name="title"
               className="bg-gray-200/50 w-full text-center"
               placeholder="Title:"
+              value={task.title}
               maxLength={100}
               onChange={handleChange}
             />
@@ -110,24 +113,31 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
               name="description"
               className="w-full bg-gray-200/50"
               placeholder="notes:"
-              onChange={handleChange}
+              value={task.description}
               maxLength={1024}
+              onChange={handleChange}
               rows="3"
             />
           </div>
         </fieldset>
         <div className="flex flex-row m-auto w-9/10 pl-2 pr-2 pb-2">
-          <fieldset>
-            <label htmlFor="time" />
-            <input
-              id="time"
-              name={isTaskSmall ? "minutes" : "hours"}
-              className="bg-gray-200/50"
-              type="number"
-              placeholder={isTaskSmall ? "minutes" : "hours"}
-              onChange={handleChange}
-            />
-          </fieldset>
+          <div className="w-1/2">
+            <fieldset>
+              <label htmlFor="time" />
+              <input
+                id="time"
+                name={isTaskSmall ? "minutes" : "hours"}
+                className="bg-gray-200/50 w-full"
+                type="number"
+                placeholder={isTaskSmall ? "minutes" : "hours"}
+                value={isTaskSmall ? task.minutes : task.hours}
+                onChange={handleChange}
+              />
+            </fieldset>
+          </div>
+          <div className="pl-2 grow">
+            <span>{isTaskSmall ? "minutes" : "hours"}</span>
+          </div>
           <fieldset className="pl-2">
             <label htmlFor="size">
               <input
