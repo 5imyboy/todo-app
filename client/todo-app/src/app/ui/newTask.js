@@ -32,7 +32,7 @@ async function addTask(task) {
 }
 
 export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTasks) {
-  let [isTaskSmall, setIsTaskSmall] = useState(true);
+  const [isTaskSmall, setIsTaskSmall] = useState(true);
   const [task, setTask] = useState(DEFAULT_TASK);
   const [errors, setErrors] = useState([]);
 
