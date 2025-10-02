@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Task from "@/app/ui/task";
-import newTask from "./ui/newTask";
+import NewTask from "@/app/ui/newTask";
 
 async function loadTasks(url) {
   const init = {
@@ -45,14 +45,14 @@ export default function Home() {
       </div>
       <main className="row-span-10 h-full w-8/10 grid grid-cols-3 flex flex-row gap-[32px] items-center rounded">
         <div className="bg-sky-400 h-full col-span-1 rounded-2xl">
-          {tasks.map(t => t.status === 'NOT_STARTED' ? Task(t, tasks, setTasks) : "")}
-          {newTask(displayNewTask, setDisplayNewTask, tasks, setTasks)}
+          {tasks.map(t => t.status === 'NOT_STARTED' ? <Task key={t.taskId} task={t} tasks={tasks} setTasks={setTasks}/> : "")}
+          <NewTask displayNewTask={displayNewTask} setDisplayNewTask={setDisplayNewTask} tasks={tasks} setTasks={setTasks} />
         </div>
         <div className="bg-sky-300 h-full col-span-1 rounded-2xl">
-          {tasks.map(t => t.status === 'IN_PROGRESS' ? Task(t, tasks, setTasks) : "")}
+          {tasks.map(t => t.status === 'IN_PROGRESS' ? <Task key={t.taskId} task={t} tasks={tasks} setTasks={setTasks}/> : "")}
         </div>
         <div className="bg-sky-200 h-full col-span-1 rounded-2xl">
-          {tasks.map(t => t.status === 'COMPLETED' ? Task(t, tasks, setTasks) : "")}
+          {tasks.map(t => t.status === 'COMPLETED' ? <Task key={t.taskId} task={t} tasks={tasks} setTasks={setTasks}/> : "")}
         </div>
       </main>
       <footer className="p-2 fixed right-px bottom-px pr-6 pb-6">
