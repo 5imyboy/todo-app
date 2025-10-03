@@ -31,21 +31,25 @@ async function addTask(task) {
   }
 }
 
-export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTasks) {
-  const [isTaskSmall, setIsTaskSmall] = useState(true);
+export default function NewTask({ displayNewTask, setDisplayNewTask, tasks, setTasks }) {
+  const [isChecked, setIsChecked] = useState(false);
   const [task, setTask] = useState(DEFAULT_TASK);
   const [errors, setErrors] = useState([]);
 
-  function toggleSize() {
+  const toggleChecked = () => {
+    setIsChecked(!isChecked);
+    toggleSize(); // for some reason, just having this function in the checkbox does not trigger changes
+  }
+
+  const toggleSize = () => {
     const newTask = { ...task }
-    if (isTaskSmall) {
+    if (!isChecked) {
       newTask.hours = newTask.minutes;
       newTask.minutes = 0;
     } else {
       newTask.minutes = newTask.hours;
       newTask.hours = 0;
     }
-    setIsTaskSmall(!isTaskSmall);
     setTask(newTask);
   }
 
@@ -55,8 +59,9 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
     setTask(newTask);
   }
 
-  const handleCancel = () => {
+  const handleReset = () => {
     setDisplayNewTask(false);
+    setIsChecked(false);
     setTask(DEFAULT_TASK);
     setErrors([]);
   }
@@ -69,9 +74,7 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
     addTask(task).then((data) => {
       if (data && data.taskId) {
         setTasks([...tasks, data]);
-        setDisplayNewTask(false);
-        setTask(DEFAULT_TASK);
-        setErrors([]);
+        handleReset();
       } else {
         setErrors(data);
       }
@@ -126,17 +129,17 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
               <label htmlFor="time" />
               <input
                 id="time"
-                name={isTaskSmall ? "minutes" : "hours"}
+                name={!isChecked ? "minutes" : "hours"}
                 className="bg-gray-200/50 w-full"
                 type="number"
-                placeholder={isTaskSmall ? "minutes" : "hours"}
-                value={isTaskSmall ? task.minutes : task.hours}
+                placeholder={!isChecked ? "minutes" : "hours"}
+                value={!isChecked ? task.minutes : task.hours}
                 onChange={handleChange}
               />
             </fieldset>
           </div>
           <div className="pl-2 grow">
-            <span>{isTaskSmall ? "minutes" : "hours"}</span>
+            <span>{!isChecked ? "minutes" : "hours"}</span>
           </div>
           <fieldset className="pl-2">
             <label htmlFor="size">
@@ -145,14 +148,17 @@ export default function newTask(displayNewTask, setDisplayNewTask, tasks, setTas
                 type="checkbox"
                 className="sr-only peer"
                 onChange={toggleSize}
+                checked={isChecked}
               />
-              <div className="relative w-11 h-6 bg-gray-200/80 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-30/50 dark:peer-focus:ring-blue-800/50 rounded-full peer dark:bg-gray-700/80 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600/80 peer-checked:bg-blue-600/50 dark:peer-checked:bg-blue-600/50"></div>
+              <div className="relative w-11 h-6 bg-gray-200/80 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-30/50 dark:peer-focus:ring-blue-800/50 rounded-full peer dark:bg-gray-700/80 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600/80 peer-checked:bg-blue-600/50 dark:peer-checked:bg-blue-600/50" 
+                onClick={toggleChecked}>
+              </div>
             </label>
           </fieldset>
         </div>
         <div className="text-m">
           <div className={`${googleSansCode.className} antialiased`}>
-            <button className="border pl-2 pr-2 mr-2 rounded-xl hover:bg-red-400/75" type="button" onClick={handleCancel}>
+            <button className="border pl-2 pr-2 mr-2 rounded-xl hover:bg-red-400/75" type="button" onClick={handleReset}>
               <span className="font-bold">x</span>
             </button>
             <button className="border pl-2 pr-2 mr-2 rounded-xl hover:bg-green-400/75" type="submit">
