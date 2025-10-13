@@ -109,7 +109,7 @@ export default function Task({ task, tasks, setTasks }) {
       </div>
 
       <div className={`${!showEdit ? "hidden" : ""}`}>
-        <NewTask displayNewTask={showEdit} setDisplayNewTask={setShowEdit} tasks={tasks} setTasks={setTasks}/>
+        <NewTask defaultTask={task} displayNewTask={showEdit} setDisplayNewTask={setShowEdit} tasks={tasks} setTasks={setTasks}/>
       </div>
     </>
   );

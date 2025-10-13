@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { googleSansCode } from "./fonts";
 
-const DEFAULT_TASK = {
+const NULL_TASK = {
   taskId: 0,
   title: "",
   description: "",
@@ -10,7 +10,9 @@ const DEFAULT_TASK = {
   minutes: 0
 }
 
-// adds task to backend SQL server
+
+// CRUD OPERATIONS
+
 async function addTask(task) {
   const init = {
     method: "POST",
@@ -31,10 +33,40 @@ async function addTask(task) {
   }
 }
 
-export default function NewTask({ displayNewTask, setDisplayNewTask, tasks, setTasks }) {
+async function updateTask(task) {
+  const init = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(task),
+  }
+  try {
+    const response = await fetch(`http://localhost:8080/task/update/${task.taskId}`, init);
+    if (response.status === 204) {
+      return null;
+    } else if (response.status !== 400 && response.status !== 404 && response.status !== 409) {
+      return Promise.reject(`Unexpected Status Code: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+// MAIN NEW/EDIT TASK CARD UI
+
+export default function NewTask({ defaultTask, displayNewTask, setDisplayNewTask, tasks, setTasks }) {
   const [isChecked, setIsChecked] = useState(false);
-  const [task, setTask] = useState(DEFAULT_TASK);
+  const [task, setTask] = useState(NULL_TASK);
   const [errors, setErrors] = useState([]);
+
+  useEffect(() => {
+    setTask(defaultTask);
+    setIsChecked(defaultTask.hours && defaultTask.hours !== 0);
+  }, []);
 
   const toggleChecked = () => {
     setIsChecked(!isChecked);
@@ -62,7 +94,7 @@ export default function NewTask({ displayNewTask, setDisplayNewTask, tasks, setT
   const handleReset = () => {
     setDisplayNewTask(false);
     setIsChecked(false);
-    setTask(DEFAULT_TASK);
+    setTask(defaultTask);
     setErrors([]);
   }
 
@@ -70,15 +102,26 @@ export default function NewTask({ displayNewTask, setDisplayNewTask, tasks, setT
     // prevent default form submit
     event.preventDefault();
 
-    // add task and handle errors and updates
-    addTask(task).then((data) => {
-      if (data && data.taskId) {
-        setTasks([...tasks, data]);
-        handleReset();
-      } else {
-        setErrors(data);
-      }
-    });
+    if (task.taskId === 0) {
+      // add task and handle errors and updates
+      addTask(task).then((data) => {
+        if (data && data.taskId) {
+          setTasks([...tasks, data]);
+          handleReset();
+        } else {
+          setErrors(data);
+        }
+      });
+    } else {
+      updateTask(task).then((data) => {
+        if (!data) {
+          setTasks([...tasks.filter(t => t.taskId !== task.taskId), task]);
+          handleReset();
+        } else {
+          setErrors(data);
+        }
+      });
+    }
   }
 
   return (
@@ -147,7 +190,7 @@ export default function NewTask({ displayNewTask, setDisplayNewTask, tasks, setT
                 id="size"
                 type="checkbox"
                 className="sr-only peer"
-                onChange={toggleSize}
+                onChange={() => {/* empty function, toggleChecked is run separately */}}
                 checked={isChecked}
               />
               <div className="relative w-11 h-6 bg-gray-200/80 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-30/50 dark:peer-focus:ring-blue-800/50 rounded-full peer dark:bg-gray-700/80 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600/80 peer-checked:bg-blue-600/50 dark:peer-checked:bg-blue-600/50" 
