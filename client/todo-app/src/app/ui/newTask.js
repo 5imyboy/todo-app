@@ -103,7 +103,7 @@ export default function NewTask({ defaultTask, displayNewTask, setDisplayNewTask
     event.preventDefault();
 
     if (task.taskId === 0) {
-      // add task and handle errors and updates
+      // add task and handle errors
       addTask(task).then((data) => {
         if (data && data.taskId) {
           setTasks([...tasks, data]);
@@ -113,9 +113,18 @@ export default function NewTask({ defaultTask, displayNewTask, setDisplayNewTask
         }
       });
     } else {
+      // update task and handle errors
       updateTask(task).then((data) => {
         if (!data) {
-          setTasks([...tasks.filter(t => t.taskId !== task.taskId), task]);
+          const newTasks = [];
+          for (const t of tasks) {
+            if (t.taskId === task.taskId) {
+              newTasks.push(task);
+            } else {
+              newTasks.push(t);
+            }
+          }
+          setTasks(newTasks);
           handleReset();
         } else {
           setErrors(data);
