@@ -92,7 +92,7 @@ export default function Task({ task, tasks, setTasks }) {
       <div className={`${showEdit ? "hidden" : ""} bg-neutral-50/25 hover:bg-gray-50/50 m-2 p-2 rounded-xl`} key={task.taskId} onClick={toggleEdit}>
         <h3 className="text-center text-xl">{task.title}</h3>
         <div className="text-m">
-          <p>Notes: {task.description}</p>
+          <p className="whitespace-pre-line mt-2 mb-2">Notes: {task.description}</p>
           <p>Time: {task.hours !== 0 ? task.hours + " hours" : task.minutes + " minutes"}</p>
           <div className={`${googleSansCode.className} antialiased`}>
             <button className="border pl-2 pr-2 mr-2 rounded-xl hover:bg-cyan-400" onClick={handleMoveTaskBackward}>
