@@ -38,8 +38,8 @@ class TaskServiceTest {
 
     @Test
     void shouldAddUnique() {
-        Task newTaskIn = new Task(0, "Make Lunch", "", Status.NOT_STARTED, 0, 20);
-        Task newTaskOut = new Task(SIZE+1, "Make Lunch", "", Status.NOT_STARTED, 0, 20);
+        Task newTaskIn = new Task(0, 1, "Make Lunch", "", Status.NOT_STARTED, 0, 20);
+        Task newTaskOut = new Task(SIZE+1, 1, "Make Lunch", "", Status.NOT_STARTED, 0, 20);
         when(repository.add(newTaskIn)).thenReturn(newTaskOut);
 
         Result<Task> actual = service.add(newTaskIn);
@@ -52,9 +52,9 @@ class TaskServiceTest {
 
     @Test
     void shouldNotAddMissingFields() {
-        Task blankTitle = new Task(0, "", "", Status.NOT_STARTED, 0, 20);
-        Task nullTitle = new Task(0, null, "", Status.NOT_STARTED, 0, 20);
-        Task nullStatus = new Task(0, "Go for a Walk", "", null, 0, 20);
+        Task blankTitle = new Task(0, 1, "", "", Status.NOT_STARTED, 0, 20);
+        Task nullTitle = new Task(0, 1, null, "", Status.NOT_STARTED, 0, 20);
+        Task nullStatus = new Task(0, 1, "Go for a Walk", "", null, 0, 20);
 
         Result<Task> actual = service.add(blankTitle);
         assertEquals(ResultType.INVALID, actual.getType());
@@ -68,7 +68,7 @@ class TaskServiceTest {
 
     @Test
     void shouldNotAddMissingTime() {
-        Task emptyTime = new Task(0, "Go for a Walk", "", Status.NOT_STARTED, 0, 0);
+        Task emptyTime = new Task(0, 1, "Go for a Walk", "", Status.NOT_STARTED, 0, 0);
         Result<Task> actual = service.add(emptyTime);
 
         assertEquals(ResultType.INVALID, actual.getType());
@@ -76,8 +76,8 @@ class TaskServiceTest {
 
     @Test
     void shouldUpdate() {
-        Task newTaskIn = new Task(1, "Wash Dishes Again", "", Status.NOT_STARTED, 0, 30);
-        Task newTaskOut = new Task(1, "Wash Dishes Again", "", Status.NOT_STARTED, 0, 30);
+        Task newTaskIn = new Task(1, 1, "Wash Dishes Again", "", Status.NOT_STARTED, 0, 30);
+        Task newTaskOut = new Task(1, 1, "Wash Dishes Again", "", Status.NOT_STARTED, 0, 30);
         when(repository.add(newTaskIn)).thenReturn(newTaskOut);
 
         Result<Task> actual = service.update(newTaskIn);
@@ -87,9 +87,9 @@ class TaskServiceTest {
 
     @Test
     void shouldNotUpdateMissingFields() {
-        Task blankTitle = new Task(1, "", "", Status.NOT_STARTED, 0, 20);
-        Task nullTitle = new Task(1, null, "", Status.NOT_STARTED, 0, 20);
-        Task nullStatus = new Task(1, "Go for a Walk", "", null, 0, 20);
+        Task blankTitle = new Task(1, 1, "", "", Status.NOT_STARTED, 0, 20);
+        Task nullTitle = new Task(1, 1, null, "", Status.NOT_STARTED, 0, 20);
+        Task nullStatus = new Task(1, 1, "Go for a Walk", "", null, 0, 20);
 
         Result<Task> actual = service.update(blankTitle);
         assertEquals(ResultType.INVALID, actual.getType());
@@ -103,7 +103,7 @@ class TaskServiceTest {
 
     @Test
     void shouldNotUpdateMissingTime() {
-        Task emptyTime = new Task(1, "Go for a Walk", "", Status.NOT_STARTED, 0, 0);
+        Task emptyTime = new Task(1, 1, "Go for a Walk", "", Status.NOT_STARTED, 0, 0);
         Result<Task> actual = service.update(emptyTime);
 
         assertEquals(ResultType.INVALID, actual.getType());
@@ -111,7 +111,7 @@ class TaskServiceTest {
 
     @Test
     void shouldNotUpdateMissingId() {
-        Task missing = new Task(99, "Missing Task", "", Status.NOT_STARTED, 0, 30);
+        Task missing = new Task(99, 1, "Missing Task", "", Status.NOT_STARTED, 0, 30);
         Result<Task> actual = service.update(missing);
         assertEquals(ResultType.NOT_FOUND, actual.getType());
     }

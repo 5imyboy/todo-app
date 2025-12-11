@@ -39,9 +39,9 @@ class TaskControllerTest {
     private static boolean hasSetUp = false;
 
     private final List<Task> TASKS = List.of(
-            new Task(1, "Clean Room", "Make the bed and vacumm the floor", Status.NOT_STARTED, 2, 0),
-            new Task(2, "Brush Teeth", "Brush for at least 3 minutes!", Status.IN_PROGRESS, 0, 10),
-            new Task(3, "Wake Up", "", Status.COMPLETED, 0, 5)
+            new Task(1, 1, "Clean Room", "Make the bed and vacumm the floor", Status.NOT_STARTED, 2, 0),
+            new Task(2, 1, "Brush Teeth", "Brush for at least 3 minutes!", Status.IN_PROGRESS, 0, 10),
+            new Task(3, 1, "Wake Up", "", Status.COMPLETED, 0, 5)
     );
 
     @BeforeEach
@@ -112,8 +112,8 @@ class TaskControllerTest {
 
     @Test
     void shouldAdd() throws Exception {
-        Task newTaskIn = new Task(0, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
-        Task newTaskOut = new Task(4, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
+        Task newTaskIn = new Task(0, 1, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
+        Task newTaskOut = new Task(4, 1, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
 
         ObjectMapper mapper = new ObjectMapper();
         String newTaskJson = mapper.writeValueAsString(newTaskIn);
@@ -132,9 +132,9 @@ class TaskControllerTest {
     @Test
     void shouldNotAddInvalid() throws Exception {
         Task nullTask = null;
-        Task blankTitle = new Task(0, "", "", Status.NOT_STARTED, 0, 20);
-        Task nullStatus = new Task(0, "Go for a Walk", "", null, 0, 20);
-        Task emptyTime = new Task(0, "Go for a Walk", "", Status.NOT_STARTED, 0, 0);
+        Task blankTitle = new Task(0, 1, "", "", Status.NOT_STARTED, 0, 20);
+        Task nullStatus = new Task(0, 1, "Go for a Walk", "", null, 0, 20);
+        Task emptyTime = new Task(0, 1, "Go for a Walk", "", Status.NOT_STARTED, 0, 0);
 
         ObjectMapper mapper = new ObjectMapper();
         String nullTaskJson = mapper.writeValueAsString(nullTask);
@@ -165,7 +165,7 @@ class TaskControllerTest {
 
     @Test
     void shouldUpdate() throws Exception {
-        Task newTask = new Task(1, "Wash Dishes", "", Status.NOT_STARTED, 0, 30);
+        Task newTask = new Task(1, 1, "Wash Dishes", "", Status.NOT_STARTED, 0, 30);
 
         ObjectMapper mapper = new ObjectMapper();
         String newTaskJson = mapper.writeValueAsString(newTask);
@@ -180,10 +180,10 @@ class TaskControllerTest {
     @Test
     void shouldNotUpdateInvalid() throws Exception {
         Task nullTask = null;
-        Task blankTitle = new Task(1, "", "", Status.NOT_STARTED, 0, 30);
-        Task nullStatus = new Task(1, "Missing Status", "", null, 0, 30);
-        Task emptyTime = new Task(1, "Missing Time", "", Status.NOT_STARTED, 0, 0);
-        Task missingId = new Task(99, "Missing Id", "", Status.NOT_STARTED, 0, 30);
+        Task blankTitle = new Task(1, 1, "", "", Status.NOT_STARTED, 0, 30);
+        Task nullStatus = new Task(1, 1, "Missing Status", "", null, 0, 30);
+        Task emptyTime = new Task(1, 1, "Missing Time", "", Status.NOT_STARTED, 0, 0);
+        Task missingId = new Task(99,1,  "Missing Id", "", Status.NOT_STARTED, 0, 30);
 
         ObjectMapper mapper = new ObjectMapper();
         String nullTaskJson = mapper.writeValueAsString(nullTask);

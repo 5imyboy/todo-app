@@ -9,6 +9,7 @@ import java.util.Objects;
 @TimeExists(message = "Time cannot be blank")
 public class Task {
     private int taskId;
+    private int userId;
     @NotBlank(message = "Task title cannot be blank")
     private String title;
     private String description;
@@ -19,8 +20,9 @@ public class Task {
 
     public Task() {}
 
-    public Task(int taskId, String title, String description, Status status, int hours, int minutes) {
+    public Task(int taskId, int userId, String title, String description, Status status, int hours, int minutes) {
         this.taskId = taskId;
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.status = status;
@@ -67,6 +69,10 @@ public class Task {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public int getUserId() { return userId; }
+
+    public void setUserId(int userId) { this.userId = userId; }
 
     public int getTaskId() {
         return taskId;

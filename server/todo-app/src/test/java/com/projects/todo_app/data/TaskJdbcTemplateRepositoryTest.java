@@ -72,7 +72,7 @@ class TaskJdbcTemplateRepositoryTest {
 
     @Test
     void shouldAdd() {
-        Task newTask = new Task(0, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
+        Task newTask = new Task(0, 1, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
         Task actual = repository.add(newTask);
 
         assertEquals(SIZE+1, actual.getTaskId());
@@ -89,7 +89,7 @@ class TaskJdbcTemplateRepositoryTest {
 
     @Test
     void shouldUpdate() {
-        Task newTask = new Task(1, "Wash Dishes", "", Status.NOT_STARTED, 0, 30);
+        Task newTask = new Task(1, 1, "Wash Dishes", "", Status.NOT_STARTED, 0, 30);
         assertTrue(repository.update(newTask));
         Task actual = repository.findById(1);
 
@@ -98,7 +98,7 @@ class TaskJdbcTemplateRepositoryTest {
 
     @Test
     void shouldNotUpdateMissing() {
-        Task missingTask = new Task(99, "Wash Dishes", "", Status.NOT_STARTED, 0, 30);
+        Task missingTask = new Task(99, 1, "Wash Dishes", "", Status.NOT_STARTED, 0, 30);
         assertFalse(repository.update(missingTask));
     }
 

@@ -24,6 +24,7 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
     private final RowMapper<Task> mapper = (ResultSet resultSet, int rowNum) -> {
         return new Task(
                 resultSet.getInt("task_id"),
+                resultSet.getInt("user_id"),
                 resultSet.getString("title"),
                 resultSet.getString("description"),
                 Status.findByTitle(resultSet.getString("status")),
@@ -34,13 +35,13 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll() {
-        final String sql = "select task_id, title, `description`, `status`, hours, minutes from task";
+        final String sql = "select task_id, user_id, title, `description`, `status`, hours, minutes from task";
         return jdbcTemplate.query(sql, mapper);
     }
 
     @Override
     public List<Task> findByStatus(Status status) {
-        final String sql = "select task_id, title, `description`, `status`, hours, minutes from task where status = ?";
+        final String sql = "select task_id, user_id, title, `description`, `status`, hours, minutes from task where status = ?";
         try {
             return jdbcTemplate.query(sql, mapper, Status.titleToString(status));
         } catch (EmptyResultDataAccessException ex) {
@@ -50,7 +51,7 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public Task findById(int taskId) {
-        final String sql = "select task_id, title, `description`, `status`, hours, minutes from task where task_id = ?";
+        final String sql = "select task_id, user_id, title, `description`, `status`, hours, minutes from task where task_id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, mapper, taskId);
         } catch (EmptyResultDataAccessException ex) {
@@ -60,18 +61,19 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
 
     @Override
     public Task add(Task task) {
-        final String sql = "insert into task (title, `description`, `status`, hours, minutes) values (?, ?, ?, ?, ?)";
+        final String sql = "insert into task (user_id, title, `description`, `status`, hours, minutes) values (?, ?, ?, ?, ?, ?)";
 
         // preparedStatement: https://docs.spring.io/spring-framework/docs/4.3.x/spring-framework-reference/html/jdbc.html
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
             int rowsAdded = jdbcTemplate.update((con) -> {
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, task.getTitle());
-                ps.setString(2, task.getDescription());
-                ps.setString(3, Status.titleToString(task.getStatus()));
-                ps.setInt(4, task.getHours());
-                ps.setInt(5, task.getMinutes());
+                ps.setInt(1, task.getUserId());
+                ps.setString(2, task.getTitle());
+                ps.setString(3, task.getDescription());
+                ps.setString(4, Status.titleToString(task.getStatus()));
+                ps.setInt(5, task.getHours());
+                ps.setInt(6, task.getMinutes());
                 return ps;
             }, keyHolder);
             if (rowsAdded <= 0 || keyHolder.getKey() == null) {
