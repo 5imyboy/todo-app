@@ -36,6 +36,12 @@ class UserJdbcTemplateRepositoryTest {
     }
 
     @Test
+    void shouldNotFindMissingEmail() {
+        User actual = repository.findByEmail("missing@missing.com");
+        assertNull(actual);
+    }
+
+    @Test
     void shouldAdd() {
         User newUser = new User(0, "testNew@testNew.com");
         User actual = repository.add(newUser);
@@ -47,5 +53,10 @@ class UserJdbcTemplateRepositoryTest {
     @Test
     void shouldDelete() {
         assertTrue(repository.deleteById(2));
+    }
+
+    @Test
+    void shouldNotDeleteMissing() {
+        assertFalse(repository.deleteById(999));
     }
 }
