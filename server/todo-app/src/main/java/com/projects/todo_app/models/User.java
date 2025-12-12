@@ -1,5 +1,6 @@
 package com.projects.todo_app.models;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
@@ -7,6 +8,7 @@ import java.util.Objects;
 public class User {
 
     private int userId;
+    @NotBlank(message = "email cannot be blank")
     @NotNull(message = "email cannot be blank")
     private String email;
 
