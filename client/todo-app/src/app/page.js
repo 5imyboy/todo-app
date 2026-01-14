@@ -6,6 +6,7 @@ import NewTask from "@/app/ui/newTask";
 
 const NULL_TASK = {
   taskId: 0,
+  userId: 1,
   title: "",
   description: "",
   status: "NOT_STARTED",

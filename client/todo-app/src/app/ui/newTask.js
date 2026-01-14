@@ -3,6 +3,7 @@ import { googleSansCode } from "./fonts";
 
 const NULL_TASK = {
   taskId: 0,
+  userId: 0,
   title: "",
   description: "",
   status: "NOT_STARTED",

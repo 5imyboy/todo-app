@@ -20,11 +20,11 @@ public class UserService {
         this.repository = repository;
     }
 
-    User findByEmail(String email) {
+    public User findByEmail(String email) {
         return repository.findByEmail(email);
     }
 
-    Result<User> add(User user) {
+    public Result<User> add(User user) {
         Result<User> result = new Result<>();
 
         Validator validator = factory.getValidator();
@@ -45,7 +45,7 @@ public class UserService {
         return result;
     }
 
-    boolean deleteById(int userId) {
+    public boolean deleteById(int userId) {
         return repository.deleteById(userId);
     }
 
