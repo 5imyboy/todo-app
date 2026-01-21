@@ -1,75 +1,99 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import Task from "@/app/ui/task";
-import NewTask from "@/app/ui/newTask";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 
-const NULL_TASK = {
-  taskId: 0,
-  userId: 1,
-  title: "",
-  description: "",
-  status: "NOT_STARTED",
-  hours: 0,
-  minutes: 0
-}
+export default function Login() {
+  const [user, setUser] = useState({});
+  const { username } = useParams();
+  const [errors, setErrors] = useState({});
+  const url = "http://localhost:8080/api/auth/login";
 
-async function loadTasks(url) {
-  const init = {
-    method: "GET",
-  };
-  try {
-    const response = await fetch(`${url}`, init);
-    if (!(response.status === 200 || response.status === 400)) {
-      return Promise.reject(`Unexpected Status Code: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
+  // update login credentials with form input
+  const handleChange = (event) => {
+    const newUser = { ...user };
+    newUser[event.target.id] = event.target.value;
+    setUser(newUser);
   }
-}
 
-export default function Home() {
-  const [tasks, setTasks] = useState([]);
-  const [displayNewTask, setDisplayNewTask] = useState(false);
-  const url = "http://localhost:8080/task";
+  // login user on form submit
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-  useEffect(() => {
-    loadTasks(url).then(setTasks);
-  }, []);
-
-  function handleShowAdd() {
-    setDisplayNewTask(true);
+    const init = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user)
+    };
+    fetch(url, init)
+      .then(response => {
+        if (response.status === 200 || response.status === 400 || response.status === 404) {
+          return response.json();
+        } else {
+          return Promise.reject(`Unexpected Status Error: ${response.status}`);
+        }
+      }).then(data => {
+        if (data.token && data.user) {
+          // on successful login, put token and user info in session storage
+          sessionStorage.setItem("me", data.token);
+          sessionStorage.setItem("user_email", data.user.email);
+          // force page to reload and get the new session items
+          window.location.href = "/tasks";
+          
+        } else {
+          setErrors(data);
+        }
+      }).catch(console.log);
   }
 
   return (
-    <div className="grid grid-rows-12 font-sans items-center justify-items-center h-screen p-8 pb-20 gap-4 sm:p-10">
-      <h1 className="row-span-1 text-4xl text-center p-4">
-        Todo List
-      </h1>
-      <div className="row-span-1 w-8/10 grid grid-cols-3 gap-[32px] text-center text-xl">
-        <h2 className="p-2">Not Started</h2>
-        <h2 className="p-2">In Progress</h2>
-        <h2 className="p-2">Completed</h2>
-      </div>
-      <main className="row-span-10 h-full w-8/10 grid grid-cols-3 flex flex-row gap-[32px] items-center rounded">
-        <div className="bg-sky-400 h-full col-span-1 rounded-2xl">
-          {tasks.map(t => t.status === 'NOT_STARTED' ? <Task key={t.taskId} task={t} tasks={tasks} setTasks={setTasks}/> : "")}
-          <NewTask defaultTask={NULL_TASK} displayNewTask={displayNewTask} setDisplayNewTask={setDisplayNewTask} tasks={tasks} setTasks={setTasks} />
+    <>
+      <section className="container-sm mt-5">
+        <div className="text-center mb-4">
+          <h1 className="mb-4">Todo List</h1>
+          <h2>Login:</h2>
         </div>
-        <div className="bg-sky-300 h-full col-span-1 rounded-2xl">
-          {tasks.map(t => t.status === 'IN_PROGRESS' ? <Task key={t.taskId} task={t} tasks={tasks} setTasks={setTasks}/> : "")}
+        <div className="flex justify-center">
+          <form onSubmit={handleSubmit} className="w-1/2 border border-muted rounded p-4">
+            <fieldset className="mb-4">
+              <label htmlFor="email">Email address: </label>
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                id="email"
+                onChange={handleChange}
+              />
+            </fieldset>
+            <fieldset className="mb-4">
+              <label htmlFor="password">Password: </label>
+              <input
+                type="password"
+                className="form-control"
+                name="password"
+                id="password"
+                onChange={handleChange}
+              />
+            </fieldset>
+            <div className="flex justify-content-between">
+              <button
+                className="btn btn-dark"
+              >
+                Login
+              </button>
+              <Link
+                className="btn btn-link flex"
+                href={"/tasks"}
+              >
+                New User?
+              </Link>
+            </div>
+          </form>
         </div>
-        <div className="bg-sky-200 h-full col-span-1 rounded-2xl">
-          {tasks.map(t => t.status === 'COMPLETED' ? <Task key={t.taskId} task={t} tasks={tasks} setTasks={setTasks}/> : "")}
-        </div>
-      </main>
-      <footer className="p-2 fixed right-px bottom-px pr-6 pb-6">
-        <button className="border border-cyan-600 pl-4 pr-4 pb-1 text-6xl rounded-full text-white bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-300 hover:bg-gradient-to-br hover:from-cyan-300 hover:to-cyan-500" onClick={handleShowAdd}>
-          +
-        </button>
-      </footer>
-    </div>
+      </section>
+    </>
   );
 }
