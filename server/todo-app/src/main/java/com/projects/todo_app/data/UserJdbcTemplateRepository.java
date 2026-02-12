@@ -21,7 +21,8 @@ public class UserJdbcTemplateRepository implements UserRepository {
     private final RowMapper<User> mapper = (ResultSet resultSet, int rowNum) -> {
         return new User(
                 resultSet.getInt("user_id"),
-                resultSet.getString("email")
+                resultSet.getString("email"),
+                resultSet.getString("password_hash")
         );
     };
 
@@ -31,7 +32,7 @@ public class UserJdbcTemplateRepository implements UserRepository {
 
     @Override
     public User findByEmail(String email) {
-        final String sql = "select user_id, email from `user` where email = ?";
+        final String sql = "select user_id, email, password_hash from `user` where email = ?";
         try {
             return jdbcTemplate.queryForObject(sql, mapper, email);
         } catch (EmptyResultDataAccessException ex) {
@@ -41,12 +42,13 @@ public class UserJdbcTemplateRepository implements UserRepository {
 
     @Override
     public User add(User user) {
-        final String sql = "insert into `user` (email) values (?)";
+        final String sql = "insert into `user` (email, password_hash) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
             int rowsAdded = jdbcTemplate.update((con) -> {
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, user.getEmail());
+                ps.setString(2, user.getPasswordHash());
                 return ps;
             }, keyHolder);
             if (rowsAdded <= 0 || keyHolder.getKey() == null) {

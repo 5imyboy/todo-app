@@ -17,5 +17,6 @@ create table task (
 
 create table `user` (
 	user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    email varchar(512) not null unique
+    email varchar(512) not null unique,
+    password_hash varchar(512) not null
 );

@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -14,9 +15,10 @@ import java.util.Set;
 public class UserService {
 
     private final UserRepository repository;
+    private final PasswordEncoder encoder;
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, PasswordEncoder encoder) {
         this.repository = repository;
     }
 
@@ -41,6 +43,7 @@ public class UserService {
             result.addErrorMessage("Email already exists");
         }
 
+        user.setPasswordHash(encoder.encode(user.getPasswordHash()));
         result.setPayLoad(repository.add(user));
         return result;
     }
