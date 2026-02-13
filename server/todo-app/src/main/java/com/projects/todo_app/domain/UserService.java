@@ -6,13 +6,16 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
@@ -20,6 +23,22 @@ public class UserService {
 
     public UserService(UserRepository repository, PasswordEncoder encoder) {
         this.repository = repository;
+        this.encoder = encoder;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = findByEmail(email);
+
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user exists with email %s", email));
+        }
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
     }
 
     public User findByEmail(String email) {
@@ -43,7 +62,7 @@ public class UserService {
             result.addErrorMessage("Email already exists");
         }
 
-        user.setPasswordHash(encoder.encode(user.getPasswordHash()));
+        user.setPassword(encoder.encode(user.getPassword()));
         result.setPayLoad(repository.add(user));
         return result;
     }

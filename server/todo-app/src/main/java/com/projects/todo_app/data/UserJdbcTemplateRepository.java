@@ -48,7 +48,7 @@ public class UserJdbcTemplateRepository implements UserRepository {
             int rowsAdded = jdbcTemplate.update((con) -> {
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, user.getEmail());
-                ps.setString(2, user.getPasswordHash());
+                ps.setString(2, user.getPassword());
                 return ps;
             }, keyHolder);
             if (rowsAdded <= 0 || keyHolder.getKey() == null) {
