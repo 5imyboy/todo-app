@@ -43,7 +43,7 @@ class UserJdbcTemplateRepositoryTest {
 
     @Test
     void shouldAdd() {
-        User newUser = new User(0, "testNew@testNew.com");
+        User newUser = new User(0, "testNew@testNew.com", "hash1234");
         User actual = repository.add(newUser);
 
         assertEquals(3, actual.getUserId());

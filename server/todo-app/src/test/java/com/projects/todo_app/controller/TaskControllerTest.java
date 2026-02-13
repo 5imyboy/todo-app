@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projects.todo_app.data.TaskRepository;
 import com.projects.todo_app.models.Status;
 import com.projects.todo_app.models.Task;
+import com.projects.todo_app.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -44,6 +45,11 @@ class TaskControllerTest {
             new Task(3, 1, "Wake Up", "", Status.COMPLETED, 0, 5)
     );
 
+    private final List<User> USERS = List.of(
+            new User(1, "testOne@email.com", "hash1234"),
+            new User(2, "testTwo@email.com", "hash5678")
+    );
+
     @BeforeEach
     void setup() {
         if (!hasSetUp) {
@@ -54,7 +60,6 @@ class TaskControllerTest {
 
     @Test
     void shouldFindTasks() throws Exception {
-        List<Task> tasks = TASKS;
 
         // ObjectMapper is the default JSON serializer for Spring MVC.
         // We use it to generate the expected HTTP response body

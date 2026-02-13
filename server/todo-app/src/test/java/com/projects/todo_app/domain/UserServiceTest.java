@@ -37,8 +37,8 @@ class UserServiceTest {
 
     @Test
     void shouldAddUnique() {
-        User newUserIn = new User(0, "newUser@email.com");
-        User newUserOut = new User(SIZE+1, "newUser@email.com");
+        User newUserIn = new User(0, "newUser@email.com", "hash1234");
+        User newUserOut = new User(SIZE+1, "newUser@email.com", "hash1234");
         when(repository.add(newUserIn)).thenReturn(newUserOut);
 
         Result<User> actual = service.add(newUserIn);
@@ -51,8 +51,8 @@ class UserServiceTest {
 
     @Test
     void shouldNotAddMissingFields() {
-        User blankUser = new User(0, "");
-        User nullUser = new User(0, null);
+        User blankUser = new User(0, "", "hash1234");
+        User nullUser = new User(0, null, "hash1234");
 
         Result<User> actual = service.add(blankUser);
         assertEquals(ResultType.INVALID, actual.getType());
@@ -63,7 +63,7 @@ class UserServiceTest {
 
     @Test
     void shouldNotAddDuplicateEmail() {
-        User blankUser = new User(0, "testOne@email.com");
+        User blankUser = new User(0, "testOne@email.com", "hash1234");
 
         Result<User> actual = service.add(blankUser);
         assertEquals(ResultType.INVALID, actual.getType());
