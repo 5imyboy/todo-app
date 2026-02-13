@@ -12,21 +12,23 @@ public class User {
     @NotNull(message = "email cannot be blank")
     private String email;
     @NotBlank(message = "password cannot be blank")
-    private String passwordHash;
+    private String password;
+
+    public User() {} // used by HTTP requests
 
     public User(String email) {
         this.email = email;
     }
 
-    public User(int userId, String email) {
-        this.userId = userId;
+    public User(String email, String password) {
         this.email = email;
+        this.password = password;
     }
 
-    public User(int userId, String email, String passwordHash) {
+    public User(int userId, String email, String password) {
         this.userId = userId;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
     }
 
     public int getUserId() {
@@ -45,12 +47,12 @@ public class User {
         this.email = email;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
