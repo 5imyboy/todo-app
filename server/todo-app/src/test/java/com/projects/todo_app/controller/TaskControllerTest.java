@@ -5,6 +5,7 @@ import com.projects.todo_app.data.TaskRepository;
 import com.projects.todo_app.models.Status;
 import com.projects.todo_app.models.Task;
 import com.projects.todo_app.models.User;
+import com.projects.todo_app.security.JwtConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -37,6 +38,10 @@ class TaskControllerTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    JwtConverter jwtConverter;
+
+    private String token;
     private static boolean hasSetUp = false;
 
     private final List<Task> TASKS = List.of(
@@ -56,6 +61,7 @@ class TaskControllerTest {
             hasSetUp = true;
             jdbcTemplate.update("call set_good_known_state();");
         }
+        token = jwtConverter.getTokenFromUser(new User(USERS.get(0).getEmail()));
     }
 
     @Test
@@ -67,13 +73,17 @@ class TaskControllerTest {
         String expectedJsonPart = jsonMapper.writeValueAsString(TASKS.get(2)); // we will not modify the 3rd element in other tests
 
         // Configure the per-test behavior for mock PetRepository.
-        when(repository.findAll()).thenReturn(tasks);
+        when(repository.findAll()).thenReturn(TASKS);
 
-        mvc.perform(get("/task"))
+        mvc.perform(get("/task")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        String result = mvc.perform(get("/task")).andReturn().getResponse().getContentAsString();
+        String result = mvc.perform(get("/task")
+                        .header("Authorization", "Bearer " + token))
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
         assertTrue(result.contains(expectedJsonPart));
     }
 
@@ -86,7 +96,8 @@ class TaskControllerTest {
 
         when(repository.findById(1)).thenReturn(task);
 
-        mvc.perform(get("/task/id/1"))
+        mvc.perform(get("/task/id/1")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expectedJson, JsonCompareMode.LENIENT));
@@ -96,7 +107,8 @@ class TaskControllerTest {
     void shouldNotFindMissingId() throws Exception {
         when(repository.findById(999)).thenReturn(null);
 
-        mvc.perform(get("/task/id/999"))
+        mvc.perform(get("/task/id/999")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
     }
 
@@ -109,7 +121,8 @@ class TaskControllerTest {
 
         when(repository.findByStatus(Status.COMPLETED)).thenReturn(completed);
 
-        mvc.perform(get("/task/status/completed"))
+        mvc.perform(get("/task/status/completed")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expectedJson));
@@ -125,6 +138,7 @@ class TaskControllerTest {
         String expectedJson = mapper.writeValueAsString(newTaskOut);
 
         var request = post("/task/add")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newTaskJson);
 
@@ -148,21 +162,25 @@ class TaskControllerTest {
         String emptyTimeJson = mapper.writeValueAsString(emptyTime);
 
         var request = post("/task/add")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(nullTaskJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
         request = post("/task/add")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(blankTitleJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
         request = post("/task/add")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(nullStatusJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
         request = post("/task/add")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(emptyTimeJson);
         mvc.perform(request).andExpect(status().isBadRequest());
@@ -176,6 +194,7 @@ class TaskControllerTest {
         String newTaskJson = mapper.writeValueAsString(newTask);
 
         var request = put("/task/update/1")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newTaskJson);
 
@@ -198,31 +217,37 @@ class TaskControllerTest {
         String missingIdJson = mapper.writeValueAsString(missingId);
 
         var request = put("/task/update/1")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(nullTaskJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
         request = put("/task/update/1")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(blankTitleJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
         request = put("/task/update/1")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(nullStatusJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
         request = put("/task/update/1")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(emptyTimeJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
         request = put("/task/update/99")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(missingIdJson);
         mvc.perform(request).andExpect(status().isNotFound());
 
         request = put("/task/update/1")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(missingIdJson);
         mvc.perform(request).andExpect(status().isConflict());
@@ -230,11 +255,15 @@ class TaskControllerTest {
 
     @Test
     void shouldDelete() throws Exception {
-        mvc.perform(delete("/task/delete/2")).andExpect(status().isNoContent());
+        mvc.perform(delete("/task/delete/2")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
     }
 
     @Test
     void shouldNotDeleteMissing() throws Exception {
-        mvc.perform(delete("/task/delete/999")).andExpect(status().isNotFound());
+        mvc.perform(delete("/task/delete/999")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound());
     }
 }
