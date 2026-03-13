@@ -1,14 +1,14 @@
 'use client';
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Login() {
   const [user, setUser] = useState({});
-  const { username } = useParams();
+  const router = useRouter();
   const [errors, setErrors] = useState({});
-  const url = "http://localhost:8080/api/auth/login";
+  const url = "http://localhost:8080/login";
 
   // update login credentials with form input
   const handleChange = (event) => {
@@ -36,12 +36,13 @@ export default function Login() {
           return Promise.reject(`Unexpected Status Error: ${response.status}`);
         }
       }).then(data => {
+        console.log(data);
         if (data.token && data.user) {
           // on successful login, put token and user info in session storage
           sessionStorage.setItem("me", data.token);
           sessionStorage.setItem("user_email", data.user.email);
           // force page to reload and get the new session items
-          window.location.href = "/tasks";
+          router.push("/tasks");
           
         } else {
           setErrors(data);
@@ -80,12 +81,13 @@ export default function Login() {
             </fieldset>
             <div className="flex justify-content-between">
               <button
+                type="submit"
                 className="btn btn-dark"
               >
                 Login
               </button>
               <Link
-                className="btn btn-link flex"
+                className="btn btn-link flex ml-4"
                 href={"/tasks"}
               >
                 New User?

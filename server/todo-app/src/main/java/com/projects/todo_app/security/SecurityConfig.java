@@ -30,11 +30,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                // Allow unauthenticated access to /authenticate and /user/add, but require authentication for all other endpoints.
+                // Allow unauthenticated access to /login and /user/add, but require authentication for all other endpoints.
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/user/add").permitAll()
-                        .requestMatchers("/test").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess ->
