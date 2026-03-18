@@ -7,7 +7,7 @@ import { useState } from "react";
 export default function Login() {
   const [user, setUser] = useState({});
   const router = useRouter();
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState([]);
   const url = "http://localhost:8080/login";
 
   // update login credentials with form input
@@ -52,18 +52,27 @@ export default function Login() {
 
   return (
     <>
-      <section className="container-sm mt-5">
-        <div className="text-center mb-4">
+      <section className="container mx-auto max-w-sm mt-12">
+        <div className="text-center mb-6">
           <h1 className="mb-4">Todo List</h1>
           <h2>Login:</h2>
         </div>
+        {errors.length > 0 && (
+          <div className="flex justify-center">
+            <div className="bg-red-100 border border-red-400 text-red-700 rounded p-3 mt-6 mb-6 w-1/3">
+              <ul>
+                {errors.map(e => <li key={e}>{e}</li>)}
+              </ul>
+            </div>
+          </div>
+        )}
         <div className="flex justify-center">
-          <form onSubmit={handleSubmit} className="w-1/2 border border-muted rounded p-4">
+          <form onSubmit={handleSubmit} className="w-1/2 border border-gray-300 rounded p-4">
             <fieldset className="mb-4">
               <label htmlFor="email">Email address: </label>
               <input
                 type="email"
-                className="form-control"
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                 name="email"
                 id="email"
                 onChange={handleChange}
@@ -73,21 +82,21 @@ export default function Login() {
               <label htmlFor="password">Password: </label>
               <input
                 type="password"
-                className="form-control"
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                 name="password"
                 id="password"
                 onChange={handleChange}
               />
             </fieldset>
-            <div className="flex justify-content-between">
+            <div className="flex justify-between">
               <button
                 type="submit"
-                className="btn btn-dark"
+                className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
               >
                 Login
               </button>
               <Link
-                className="btn btn-link flex ml-4"
+                className="text-blue-600 underline ml-4"
                 href={"/tasks"}
               >
                 New User?
