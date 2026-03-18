@@ -52,7 +52,7 @@ export default function Login() {
 
   return (
     <>
-      <section className="container mx-auto max-w-sm mt-12">
+      <section className="container mx-auto max-w-m mt-12">
         <div className="text-center mb-6">
           <h1 className="mb-4">Todo List</h1>
           <h2>Login:</h2>
