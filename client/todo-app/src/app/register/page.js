@@ -4,58 +4,27 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function Login() {
+export default function Register() {
+
   const [user, setUser] = useState({});
   const router = useRouter();
   const [errors, setErrors] = useState([]);
   const url = "http://localhost:8080/login";
 
-  // update login credentials with form input
   const handleChange = (event) => {
-    const newUser = { ...user };
-    newUser[event.target.id] = event.target.value;
-    setUser(newUser);
+
   }
 
-  // login user on form submit
   const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const init = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user)
-    };
-    fetch(url, init)
-      .then(response => {
-        if (response.status === 200 || response.status === 400 || response.status === 404) {
-          return response.json();
-        } else {
-          return Promise.reject(`Unexpected Status Error: ${response.status}`);
-        }
-      }).then(data => {
-        console.log(data);
-        if (data.token && data.user) {
-          // on successful login, put token and user info in session storage
-          sessionStorage.setItem("me", data.token);
-          sessionStorage.setItem("user_email", data.user.email);
-          // force page to reload and get the new session items
-          router.push("/tasks");
-          
-        } else {
-          setErrors(data);
-        }
-      }).catch(console.log);
+    return;
   }
 
-  return (
+ return (
     <>
       <section className="container mx-auto max-w-m mt-12">
         <div className="text-center mb-6">
           <h1 className="mb-4">Todo List</h1>
-          <h2>Login:</h2>
+          <h2>Register:</h2>
         </div>
         {errors.length > 0 && (
           <div className="flex justify-center">
@@ -88,18 +57,28 @@ export default function Login() {
                 onChange={handleChange}
               />
             </fieldset>
+            <fieldset className="mb-4">
+              <label htmlFor="password-confirm">Confirm Password: </label>
+              <input
+                type="password"
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                name="password-confirm"
+                id="password-confirm"
+                onChange={handleChange}
+              />
+            </fieldset>
             <div className="flex justify-between">
               <button
                 type="submit"
                 className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
               >
-                Login
+                Register
               </button>
               <Link
                 className="text-blue-600 underline ml-4"
-                href={"/register"}
+                href={"/"}
               >
-                New User?
+                Returning User
               </Link>
             </div>
           </form>
