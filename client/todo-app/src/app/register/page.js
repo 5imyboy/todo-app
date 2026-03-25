@@ -9,14 +9,46 @@ export default function Register() {
   const [user, setUser] = useState({});
   const router = useRouter();
   const [errors, setErrors] = useState([]);
-  const url = "http://localhost:8080/login";
+  const url = "http://localhost:8080/register";
 
   const handleChange = (event) => {
-
+    console.log(user);
+    const newUser = { ...user };
+    newUser[event.target.id] = event.target.value;
+    setUser(newUser);
   }
 
   const handleSubmit = (event) => {
-    return;
+    event.preventDefault();
+
+    if (user.password !== user.confirmPassword) {
+      setErrors(["Passwords do not match"]);
+      return;
+    }
+    delete user.confirmPassword; // backend user object doesn't have this prop
+
+    const init = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user)
+    };
+    fetch(url, init)
+      .then(response => {
+        if (response.status === 201 || response.status === 400) {
+          return response.json();
+        } else {
+          return Promise.reject(`Unexpected Status Error: ${response.status}`);
+        }
+      }).then(data => {
+        if (data.userId) {
+          router.push("/");
+        } else {
+          user.confirmPassword = user.password;
+          setErrors(data);
+        }
+      }).catch(console.log);
   }
 
  return (
@@ -58,12 +90,12 @@ export default function Register() {
               />
             </fieldset>
             <fieldset className="mb-4">
-              <label htmlFor="password-confirm">Confirm Password: </label>
+              <label htmlFor="confirmPassword">Confirm Password: </label>
               <input
                 type="password"
                 className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                name="password-confirm"
-                id="password-confirm"
+                name="confirmPassword"
+                id="confirmPassword"
                 onChange={handleChange}
               />
             </fieldset>

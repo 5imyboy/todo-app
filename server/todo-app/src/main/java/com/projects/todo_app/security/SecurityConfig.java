@@ -33,7 +33,7 @@ public class SecurityConfig {
                 // Allow unauthenticated access to /login and /user/add, but require authentication for all other endpoints.
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers("/user/add").permitAll()
+                        .requestMatchers("/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess ->

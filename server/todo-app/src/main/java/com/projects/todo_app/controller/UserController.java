@@ -27,15 +27,6 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/user/add")
-    public ResponseEntity<?> addUser(@RequestBody User user) {
-        Result<User> result = service.add(user);
-        if (Objects.requireNonNull(result.getType()) == ResultType.INVALID) {
-            return new ResponseEntity<>(result.getMessages(), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.getPayload(), HttpStatus.CREATED);
-    }
-
     @DeleteMapping("/user/delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int userId) {
         if (!service.deleteById(userId)) {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Objects;
 
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080"})
 @RestController
@@ -38,5 +39,14 @@ public class AuthController {
 
         return new ResponseEntity<>(result.getMessages(), HttpStatus.NOT_FOUND);
 
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody User user) {
+        Result<User> result = userService.add(user);
+        if (Objects.requireNonNull(result.getType()) == ResultType.INVALID) {
+            return new ResponseEntity<>(result.getMessages(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(result.getPayload(), HttpStatus.CREATED);
     }
 }
