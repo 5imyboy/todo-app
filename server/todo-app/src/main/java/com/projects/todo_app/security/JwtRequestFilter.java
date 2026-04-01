@@ -4,6 +4,7 @@ package com.projects.todo_app.security;
 import com.projects.todo_app.models.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class JwtRequestFilter extends BasicAuthenticationFilter {
@@ -29,22 +31,21 @@ public class JwtRequestFilter extends BasicAuthenticationFilter {
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
 
-        // 2. Read the Authorization value from the request.
-        String authorization = request.getHeader("Authorization");
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-
-            // 3. The value looks okay, confirm it with JwtConverter.
-            User user = converter.getUserFromToken(authorization);
-            if (user == null) {
-                response.setStatus(403); // Forbidden
-            } else {
-
-                // 4. Confirmed. Set auth for this single request.
-                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                        user.getEmail(), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-
-                SecurityContextHolder.getContext().setAuthentication(token);
-            }
+        // 2. Read the token cookie from the request.
+        if (request.getCookies() != null) {
+            Arrays.stream(request.getCookies())
+                    .filter(c -> c.getName().equals("token"))
+                    .findFirst()
+                    .ifPresent(c -> {
+                        // 3. Confirm the token with JwtConverter.
+                        User user = converter.getUserFromToken("Bearer " + c.getValue());
+                        if (user != null) {
+                            // 4. Confirmed. Set auth for this single request.
+                            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                                    user.getEmail(), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                            SecurityContextHolder.getContext().setAuthentication(token);
+                        }
+                    });
         }
 
         // 5. Keep the chain going.
