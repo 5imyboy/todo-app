@@ -17,3 +17,7 @@ Content-Type: application/json
     "email": "testOne@test.com",
     "password": "password"
 }
+
+###
+POST {{host}}/logout HTTP/1.1
+Content-Type: application/json
