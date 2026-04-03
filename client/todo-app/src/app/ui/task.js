@@ -11,6 +11,7 @@ async function updateStatus(task) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(task),
   }
   try {
@@ -30,6 +31,7 @@ async function updateStatus(task) {
 async function deleteTask(task) {
   const init = {
     method: "DELETE",
+    credentials: "include",
   }
   try {
     const response = await fetch(`http://localhost:8080/task/delete/${task.taskId}`, init);

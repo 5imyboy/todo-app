@@ -20,6 +20,7 @@ async function addTask(task) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(task),
   }
   try {
@@ -40,6 +41,7 @@ async function updateTask(task) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(task),
   }
   try {

@@ -26,6 +26,7 @@ export default function Login() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(user)
     };
     fetch(url, init)
@@ -36,14 +37,8 @@ export default function Login() {
           return Promise.reject(`Unexpected Status Error: ${response.status}`);
         }
       }).then(data => {
-        console.log(data);
-        if (data.token && data.user) {
-          // on successful login, put token and user info in session storage
-          sessionStorage.setItem("me", data.token);
-          sessionStorage.setItem("user_email", data.user.email);
-          // force page to reload and get the new session items
+        if (data.userId) {
           router.push("/tasks");
-          
         } else {
           setErrors(data);
         }

@@ -17,6 +17,7 @@ const NULL_TASK = {
 async function loadTasks(url) {
   const init = {
     method: "GET",
+    credentials: "include",
   };
   try {
     const response = await fetch(`${url}`, init);
