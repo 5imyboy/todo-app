@@ -5,6 +5,7 @@ package com.projects.todo_app.security;
 import com.projects.todo_app.models.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -14,7 +15,11 @@ import java.util.Date;
 public class JwtConverter {
 
     // 1. Signing key
-    private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final Key key;
+
+    public JwtConverter(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
     // 2. "Configurable" constants
     private final String ISSUER = "bug-todo";
     private final int EXPIRATION_MINUTES = 15;
