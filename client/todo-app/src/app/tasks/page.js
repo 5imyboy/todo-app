@@ -34,7 +34,7 @@ async function loadTasks(url) {
 export default function Home() {
   const [tasks, setTasks] = useState([]);
   const [displayNewTask, setDisplayNewTask] = useState(false);
-  const url = "http://localhost:8080/task";
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/task`;
 
   useEffect(() => {
     loadTasks(url).then(setTasks);

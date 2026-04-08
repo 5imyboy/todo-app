@@ -15,7 +15,7 @@ async function updateStatus(task) {
     body: JSON.stringify(task),
   }
   try {
-    const response = await fetch(`http://localhost:8080/task/update/${task.taskId}`, init);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/task/update/${task.taskId}`, init);
     if (response.status === 204) {
       return null;
     } else if (response.status !== 400 && response.status !== 404 && response.status !== 409) {
@@ -34,7 +34,7 @@ async function deleteTask(task) {
     credentials: "include",
   }
   try {
-    const response = await fetch(`http://localhost:8080/task/delete/${task.taskId}`, init);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/task/delete/${task.taskId}`, init);
     if (response.status !== 204) {
       return Promise.reject(`Unexpected Status Code: ${response.status}`);
     }

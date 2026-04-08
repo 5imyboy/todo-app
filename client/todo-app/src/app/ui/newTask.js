@@ -24,7 +24,7 @@ async function addTask(task) {
     body: JSON.stringify(task),
   }
   try {
-    const response = await fetch("http://localhost:8080/task/add", init);
+    const response = await fetch("${process.env.NEXT_PUBLIC_API_URL}/task/add", init);
     if (response.status !== 201 && response.status !== 400) {
       return Promise.reject(`Unexpected Status Code: ${response.status}`)
     }
@@ -45,7 +45,7 @@ async function updateTask(task) {
     body: JSON.stringify(task),
   }
   try {
-    const response = await fetch(`http://localhost:8080/task/update/${task.taskId}`, init);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/task/update/${task.taskId}`, init);
     if (response.status === 204) {
       return null;
     } else if (response.status !== 400 && response.status !== 404 && response.status !== 409) {

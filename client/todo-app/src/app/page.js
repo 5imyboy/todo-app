@@ -8,7 +8,7 @@ export default function Login() {
   const [user, setUser] = useState({});
   const router = useRouter();
   const [errors, setErrors] = useState([]);
-  const url = "http://localhost:8080/login";
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/login`;
 
   // update login credentials with form input
   const handleChange = (event) => {

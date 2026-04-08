@@ -9,10 +9,9 @@ export default function Register() {
   const [user, setUser] = useState({});
   const router = useRouter();
   const [errors, setErrors] = useState([]);
-  const url = "http://localhost:8080/register";
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/register`;
 
   const handleChange = (event) => {
-    console.log(user);
     const newUser = { ...user };
     newUser[event.target.id] = event.target.value;
     setUser(newUser);
