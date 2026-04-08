@@ -7,6 +7,7 @@ import com.projects.todo_app.domain.UserService;
 import com.projects.todo_app.models.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +22,13 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final boolean cookieSecure;
 
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService,
+                          @Value("${cookie.secure}") boolean cookieSecure) {
         this.authService = authService;
         this.userService = userService;
+        this.cookieSecure = cookieSecure;
     }
 
     @PostMapping("/login")
@@ -35,11 +39,13 @@ public class AuthController {
 
             Cookie tokenCookie = new Cookie("token", result.getPayload());
             tokenCookie.setHttpOnly(true);
+            tokenCookie.setSecure(cookieSecure);
             tokenCookie.setPath("/");
             response.addCookie(tokenCookie);
 
             Cookie emailCookie = new Cookie("user_email", user.getEmail());
             emailCookie.setHttpOnly(true);
+            emailCookie.setSecure(cookieSecure);
             emailCookie.setPath("/");
             response.addCookie(emailCookie);
 
