@@ -3,11 +3,14 @@ package com.projects.todo_app.controller;
 import com.projects.todo_app.domain.Result;
 import com.projects.todo_app.domain.ResultType;
 import com.projects.todo_app.domain.TaskService;
+import com.projects.todo_app.domain.UserService;
 import com.projects.todo_app.models.Status;
 import com.projects.todo_app.models.Task;
+import com.projects.todo_app.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +23,17 @@ public class TaskController {
     @Autowired
     TaskService service;
 
+    @Autowired
+    UserService userService;
+
     @GetMapping("/task")
     public ResponseEntity<?> findTasks() {
-        List<Task> tasks = service.findAll();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        List<Task> tasks = service.findByUserId(user.getUserId());
         return ResponseEntity.ok(tasks);
     }
 

@@ -40,13 +40,15 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
     }
 
     @Override
+    public List<Task> findByUserId(int userId) {
+        final String sql = "select task_id, user_id, title, `description`, `status`, hours, minutes from task where user_id = ?";
+        return jdbcTemplate.query(sql, mapper, userId);
+    }
+
+    @Override
     public List<Task> findByStatus(Status status) {
         final String sql = "select task_id, user_id, title, `description`, `status`, hours, minutes from task where status = ?";
-        try {
-            return jdbcTemplate.query(sql, mapper, Status.titleToString(status));
-        } catch (EmptyResultDataAccessException ex) {
-            return null;
-        }
+        return jdbcTemplate.query(sql, mapper, Status.titleToString(status));
     }
 
     @Override

@@ -8,6 +8,8 @@ import java.util.List;
 public interface TaskRepository {
     List<Task> findAll();
 
+    List<Task> findByUserId(int userId);
+
     List<Task> findByStatus(Status status);
 
     Task findById(int taskId);

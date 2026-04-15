@@ -23,6 +23,10 @@ public class TaskService {
         return repository.findAll();
     }
 
+    public List<Task> findByUserId(int userId) {
+        return repository.findByUserId(userId);
+    }
+
     public List<Task> findByStatus(Status status) {
         return repository.findByStatus(status);
     }
