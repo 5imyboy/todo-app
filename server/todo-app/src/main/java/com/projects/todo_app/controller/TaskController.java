@@ -68,6 +68,12 @@ public class TaskController {
 
     @PostMapping("/task/add")
     public ResponseEntity<?> addTask(@RequestBody Task task) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        task.setUserId(user.getUserId());
         Result<Task> result = service.add(task);
         if (Objects.requireNonNull(result.getType()) == ResultType.INVALID) {
             return new ResponseEntity<>(result.getMessages(), HttpStatus.BAD_REQUEST);

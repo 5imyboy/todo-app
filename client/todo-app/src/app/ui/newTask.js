@@ -24,7 +24,7 @@ async function addTask(task) {
     body: JSON.stringify(task),
   }
   try {
-    const response = await fetch("${process.env.NEXT_PUBLIC_API_URL}/task/add", init);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/task/add`, init);
     if (response.status !== 201 && response.status !== 400) {
       return Promise.reject(`Unexpected Status Code: ${response.status}`)
     }
