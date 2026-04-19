@@ -2,6 +2,7 @@ package com.projects.todo_app.security;
 
 // imports
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,11 +26,11 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtConverter converter;
-    //private final JwtRequestFilter jwtRequestFilter;
+    private final String allowedOrigin;
 
-    public SecurityConfig(JwtConverter converter) {
+    public SecurityConfig(JwtConverter converter, @Value("${cors.allowed-origin}") String allowedOrigin) {
         this.converter = converter;
-        //this.jwtRequestFilter = filter;
+        this.allowedOrigin = allowedOrigin;
     }
 
     // https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
@@ -59,7 +60,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of(allowedOrigin));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true); // allow 'credentials: include' in fetch requests to allow requests from different origins
