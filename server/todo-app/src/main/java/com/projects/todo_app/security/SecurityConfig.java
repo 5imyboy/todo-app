@@ -41,12 +41,12 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // Allow unauthenticated access to /login and /user/add, but require authentication for all other endpoints.
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/api/logout")
                         .addLogoutHandler(new CookieClearingLogoutHandler("token", "user_email"))
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                 )

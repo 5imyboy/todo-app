@@ -31,7 +31,7 @@ export default function Login() {
     };
     fetch(url, init)
       .then(response => {
-        if (response.status === 200 || response.status === 400 || response.status === 404) {
+        if (response.status === 200 || response.status === 401) {
           return response.json();
         } else {
           return Promise.reject(`Unexpected Status Error: ${response.status}`);
