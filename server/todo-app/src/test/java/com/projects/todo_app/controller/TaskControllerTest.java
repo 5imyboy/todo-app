@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 
+import jakarta.servlet.http.Cookie;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -75,13 +76,13 @@ class TaskControllerTest {
         // Configure the per-test behavior for mock PetRepository.
         when(repository.findAll()).thenReturn(TASKS);
 
-        mvc.perform(get("/task")
-                        .header("Authorization", "Bearer " + token))
+        mvc.perform(get("/api/task")
+                        .cookie(new Cookie("token", token)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        String result = mvc.perform(get("/task")
-                        .header("Authorization", "Bearer " + token))
+        String result = mvc.perform(get("/api/task")
+                        .cookie(new Cookie("token", token)))
                 .andReturn().getResponse().getContentAsString();
         System.out.println(result);
         assertTrue(result.contains(expectedJsonPart));
@@ -96,8 +97,8 @@ class TaskControllerTest {
 
         when(repository.findById(1)).thenReturn(task);
 
-        mvc.perform(get("/task/id/1")
-                        .header("Authorization", "Bearer " + token))
+        mvc.perform(get("/api/task/id/1")
+                        .cookie(new Cookie("token", token)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expectedJson, JsonCompareMode.LENIENT));
@@ -107,8 +108,8 @@ class TaskControllerTest {
     void shouldNotFindMissingId() throws Exception {
         when(repository.findById(999)).thenReturn(null);
 
-        mvc.perform(get("/task/id/999")
-                        .header("Authorization", "Bearer " + token))
+        mvc.perform(get("/api/task/id/999")
+                        .cookie(new Cookie("token", token)))
                 .andExpect(status().isNotFound());
     }
 
@@ -121,8 +122,8 @@ class TaskControllerTest {
 
         when(repository.findByStatus(Status.COMPLETED)).thenReturn(completed);
 
-        mvc.perform(get("/task/status/completed")
-                        .header("Authorization", "Bearer " + token))
+        mvc.perform(get("/api/task/status/completed")
+                        .cookie(new Cookie("token", token)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expectedJson));
@@ -137,8 +138,8 @@ class TaskControllerTest {
         String newTaskJson = mapper.writeValueAsString(newTaskIn);
         String expectedJson = mapper.writeValueAsString(newTaskOut);
 
-        var request = post("/task/add")
-                .header("Authorization", "Bearer " + token)
+        var request = post("/api/task/add")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newTaskJson);
 
@@ -161,26 +162,26 @@ class TaskControllerTest {
         String nullStatusJson = mapper.writeValueAsString(nullStatus);
         String emptyTimeJson = mapper.writeValueAsString(emptyTime);
 
-        var request = post("/task/add")
-                .header("Authorization", "Bearer " + token)
+        var request = post("/api/task/add")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(nullTaskJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
-        request = post("/task/add")
-                .header("Authorization", "Bearer " + token)
+        request = post("/api/task/add")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(blankTitleJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
-        request = post("/task/add")
-                .header("Authorization", "Bearer " + token)
+        request = post("/api/task/add")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(nullStatusJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
-        request = post("/task/add")
-                .header("Authorization", "Bearer " + token)
+        request = post("/api/task/add")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(emptyTimeJson);
         mvc.perform(request).andExpect(status().isBadRequest());
@@ -193,8 +194,8 @@ class TaskControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         String newTaskJson = mapper.writeValueAsString(newTask);
 
-        var request = put("/task/update/1")
-                .header("Authorization", "Bearer " + token)
+        var request = put("/api/task/update/1")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newTaskJson);
 
@@ -216,38 +217,38 @@ class TaskControllerTest {
         String emptyTimeJson = mapper.writeValueAsString(emptyTime);
         String missingIdJson = mapper.writeValueAsString(missingId);
 
-        var request = put("/task/update/1")
-                .header("Authorization", "Bearer " + token)
+        var request = put("/api/task/update/1")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(nullTaskJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
-        request = put("/task/update/1")
-                .header("Authorization", "Bearer " + token)
+        request = put("/api/task/update/1")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(blankTitleJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
-        request = put("/task/update/1")
-                .header("Authorization", "Bearer " + token)
+        request = put("/api/task/update/1")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(nullStatusJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
-        request = put("/task/update/1")
-                .header("Authorization", "Bearer " + token)
+        request = put("/api/task/update/1")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(emptyTimeJson);
         mvc.perform(request).andExpect(status().isBadRequest());
 
-        request = put("/task/update/99")
-                .header("Authorization", "Bearer " + token)
+        request = put("/api/task/update/99")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(missingIdJson);
         mvc.perform(request).andExpect(status().isNotFound());
 
-        request = put("/task/update/1")
-                .header("Authorization", "Bearer " + token)
+        request = put("/api/task/update/1")
+                .cookie(new Cookie("token", token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(missingIdJson);
         mvc.perform(request).andExpect(status().isConflict());
@@ -255,15 +256,15 @@ class TaskControllerTest {
 
     @Test
     void shouldDelete() throws Exception {
-        mvc.perform(delete("/task/delete/2")
-                        .header("Authorization", "Bearer " + token))
+        mvc.perform(delete("/api/task/delete/2")
+                        .cookie(new Cookie("token", token)))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void shouldNotDeleteMissing() throws Exception {
-        mvc.perform(delete("/task/delete/999")
-                        .header("Authorization", "Bearer " + token))
+        mvc.perform(delete("/api/task/delete/999")
+                        .cookie(new Cookie("token", token)))
                 .andExpect(status().isNotFound());
     }
 }

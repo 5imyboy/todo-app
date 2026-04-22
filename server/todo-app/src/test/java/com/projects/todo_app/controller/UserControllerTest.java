@@ -3,6 +3,8 @@ package com.projects.todo_app.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projects.todo_app.data.UserRepository;
 import com.projects.todo_app.models.User;
+import com.projects.todo_app.security.JwtConverter;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -32,7 +34,11 @@ class UserControllerTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    JwtConverter jwtConverter;
+
     private static boolean hasSetUp = false;
+    private String token;
 
     private final List<User> USERS = List.of(
             new User(1, "testOne@email.com", "hash1234"),
@@ -45,6 +51,7 @@ class UserControllerTest {
             hasSetUp = true;
             jdbcTemplate.update("call set_good_known_state();");
         }
+        token = jwtConverter.getTokenFromUser(new User(USERS.get(0).getEmail()));
     }
 
     @Test
@@ -54,15 +61,15 @@ class UserControllerTest {
         ObjectMapper jsonMapper = new ObjectMapper();
         String expectedJson = jsonMapper.writeValueAsString(user);
 
-        when(repository.findByEmail("testOne@email.com")).thenReturn(user);
-
+        mvc.perform(get("/api/user/" + user.getEmail())
+                        .cookie(new Cookie("token", token)))
+                .andExpect(status().isOk());
     }
 
     @Test
     void shouldNotFindMissingEmail() throws Exception {
-        when(repository.findByEmail("null@null.com")).thenReturn(null);
-
-        mvc.perform(get("/user/null@null.com"))
+        mvc.perform(get("/api/user/null@null.com")
+                        .cookie(new Cookie("token", token)))
                 .andExpect(status().isNotFound());
     }
 }

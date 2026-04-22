@@ -1,7 +1,9 @@
 @host = http://localhost:8080
+// copy token value from Set-Cookie header after running the login request in user.http
+@token = eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJidWctdG9kbyIsInN1YiI6InRlc3RPbmVAdGVzdC5jb20iLCJleHAiOjE3NzY4OTU5NzR9.qXdhhn9OBNIFEu4RIdA3HYTaO0m5rNtv3ehsf18Siic
 
 ###
-POST {{host}}/register HTTP/1.1
+POST {{host}}/api/register HTTP/1.1
 Content-Type: application/json
 
 {
@@ -10,14 +12,14 @@ Content-Type: application/json
 }
 
 ###
-POST {{host}}/login HTTP/1.1
+POST {{host}}/api/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "testOne@test.com",
-    "password": "password"
+    "email": "simonyong05@gmail.com",
+    "password": "Yongzheng"
 }
 
 ###
-POST {{host}}/logout HTTP/1.1
-Content-Type: application/json
+POST {{host}}/api/logout HTTP/1.1
+Cookie: token={{token}}
