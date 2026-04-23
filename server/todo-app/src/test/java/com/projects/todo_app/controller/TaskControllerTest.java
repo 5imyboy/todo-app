@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -66,26 +66,19 @@ class TaskControllerTest {
     }
 
     @Test
-    void shouldFindTasks() throws Exception {
-
-        // ObjectMapper is the default JSON serializer for Spring MVC.
-        // We use it to generate the expected HTTP response body
-        ObjectMapper jsonMapper = new ObjectMapper();
-        String expectedJsonPart = jsonMapper.writeValueAsString(TASKS.get(2)); // we will not modify the 3rd element in other tests
-
-        // Configure the per-test behavior for mock PetRepository.
-        when(repository.findAll()).thenReturn(TASKS);
-
-        mvc.perform(get("/api/task")
-                        .cookie(new Cookie("token", token)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-
+    void shouldFindTasksForAuthenticatedUser() throws Exception {
         String result = mvc.perform(get("/api/task")
                         .cookie(new Cookie("token", token)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
-        System.out.println(result);
-        assertTrue(result.contains(expectedJsonPart));
+
+        // all returned tasks should belong to the authenticated user (userId = 1)
+        ObjectMapper mapper = new ObjectMapper();
+        Task[] tasks = mapper.readValue(result, Task[].class);
+        for (Task task : tasks) {
+            assertEquals(1, task.getUserId());
+        }
     }
 
     @Test
@@ -131,22 +124,22 @@ class TaskControllerTest {
 
     @Test
     void shouldAdd() throws Exception {
-        Task newTaskIn = new Task(0, 1, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
-        Task newTaskOut = new Task(4, 1, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
+        Task newTaskIn = new Task(0, 99, "Make Breakfast", "", Status.NOT_STARTED, 0, 20);
 
         ObjectMapper mapper = new ObjectMapper();
         String newTaskJson = mapper.writeValueAsString(newTaskIn);
-        String expectedJson = mapper.writeValueAsString(newTaskOut);
 
-        var request = post("/api/task/add")
-                .cookie(new Cookie("token", token))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(newTaskJson);
-
-        mvc.perform(request)
+        String result = mvc.perform(post("/api/task/add")
+                        .cookie(new Cookie("token", token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newTaskJson))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedJson));
+                .andReturn().getResponse().getContentAsString();
+
+        // userId should be set from the authenticated user, not from the request body (which sent 99)
+        Task created = mapper.readValue(result, Task.class);
+        assertEquals(1, created.getUserId());
     }
 
     @Test

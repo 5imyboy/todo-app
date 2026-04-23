@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +35,17 @@ class TaskServiceTest {
         if (!hasSetUp) {
             hasSetUp = true;
             jdbcTemplate.update("call set_good_known_state();");
+        }
+    }
+
+    @Test
+    void shouldFindByUserId() {
+        List<Task> actual = service.findByUserId(1);
+        assertNotNull(actual);
+        assertFalse(actual.isEmpty());
+
+        for (Task task : actual) {
+            assertEquals(1, task.getUserId());
         }
     }
 

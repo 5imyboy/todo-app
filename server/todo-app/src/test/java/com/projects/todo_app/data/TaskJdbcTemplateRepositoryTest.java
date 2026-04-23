@@ -46,6 +46,24 @@ class TaskJdbcTemplateRepositoryTest {
     }
 
     @Test
+    void shouldFindByUserId() {
+        List<Task> actual = repository.findByUserId(1);
+        assertNotNull(actual);
+        assertFalse(actual.isEmpty());
+
+        for (Task task : actual) {
+            assertEquals(1, task.getUserId());
+        }
+    }
+
+    @Test
+    void shouldFindByUserIdReturnsEmpty() {
+        List<Task> actual = repository.findByUserId(999);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+    }
+
+    @Test
     void shouldFindByStatus() {
         List<Task> actual = repository.findByStatus(Status.IN_PROGRESS);
         assertNotNull(actual);

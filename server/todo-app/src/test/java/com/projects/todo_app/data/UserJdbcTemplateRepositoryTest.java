@@ -18,7 +18,7 @@ class UserJdbcTemplateRepositoryTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    boolean hasSetUp = false;
+    private static boolean hasSetUp = false;
 
     @BeforeEach
     void setup() {

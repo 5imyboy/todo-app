@@ -35,8 +35,8 @@ begin
 		(3, 1, "Wake Up", "", 'COMPLETED', 0, 5);
         
 	insert into `user`
-    values 
-		(1, "testOne@email.com", "hash1234"),
-        (2, "testTwo@email.com", "hash5678");
+    values
+		(1, "testOne@email.com", "$2a$10$dos11HQE1eDwpfBaXfmMiusFRSSPOrYZejckqkV85pgItNsrbn59a"), ## hash for 'password'
+        (2, "testTwo@email.com", "$2a$10$CgwtnVZvMAMA4zXiJ.B8a.fogAnhIYepMc/zxsJj7Z0mBDEMfG9fS"); ## hash for 'password2'
 end //
 delimiter ;
