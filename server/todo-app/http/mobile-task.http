@@ -1,0 +1,8 @@
+@host = http://localhost:8080
+// copy token value from Bearer header after running the login request in user.http
+@token = eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJidWctdG9kbyIsInN1YiI6InNpbW9ueW9uZzA1QGdtYWlsLmNvbSIsImV4cCI6MTc3Nzc3NTExM30.IHbISIE318YXlckoMai3K5H6VqxqRhVUn174WeY6TuA
+
+###
+// find by logged in user
+GET {{host}}/api/task HTTP/1.1
+Authorization: Bearer {{token}}
