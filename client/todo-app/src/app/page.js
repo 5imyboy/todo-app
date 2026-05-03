@@ -37,7 +37,7 @@ export default function Login() {
           return Promise.reject(`Unexpected Status Error: ${response.status}`);
         }
       }).then(data => {
-        if (data.userId) {
+        if (data.user?.userId) {
           router.push("/tasks");
         } else {
           setErrors(data);

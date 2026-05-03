@@ -4,6 +4,7 @@ import com.projects.todo_app.domain.AuthService;
 import com.projects.todo_app.domain.Result;
 import com.projects.todo_app.domain.ResultType;
 import com.projects.todo_app.domain.UserService;
+import com.projects.todo_app.models.JwtResponse;
 import com.projects.todo_app.models.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,7 +52,7 @@ public class AuthController {
             emailCookie.setPath("/");
             response.addCookie(emailCookie);
 
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return new ResponseEntity<>(new JwtResponse(result.getPayload(), user), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(result.getMessages(), HttpStatus.UNAUTHORIZED);

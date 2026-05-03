@@ -31,24 +31,32 @@ public class JwtRequestFilter extends BasicAuthenticationFilter {
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
 
-        // 2. Read the token cookie from the request.
-        if (request.getCookies() != null) {
-            Arrays.stream(request.getCookies())
-                    .filter(c -> c.getName().equals("token"))
-                    .findFirst()
-                    .ifPresent(c -> {
-                        // 3. Confirm the token with JwtConverter.
-                        User user = converter.getUserFromToken("Bearer " + c.getValue());
-                        if (user != null) {
-                            // 4. Confirmed. Set auth for this single request.
-                            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                                    user.getEmail(), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-                            SecurityContextHolder.getContext().setAuthentication(token);
-                        }
-                    });
+        String bearerToken = null;
+
+        // Mobile clients send the token as an Authorization: Bearer header.
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            bearerToken = authHeader;
         }
 
-        // 5. Keep the chain going.
+        // Web clients send the token as an HttpOnly cookie.
+        if (bearerToken == null && request.getCookies() != null) {
+            bearerToken = Arrays.stream(request.getCookies())
+                    .filter(c -> c.getName().equals("token"))
+                    .findFirst()
+                    .map(c -> "Bearer " + c.getValue())
+                    .orElse(null);
+        }
+
+        if (bearerToken != null) {
+            User user = converter.getUserFromToken(bearerToken);
+            if (user != null) {
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        user.getEmail(), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                SecurityContextHolder.getContext().setAuthentication(token);
+            }
+        }
+
         chain.doFilter(request, response);
     }
 }

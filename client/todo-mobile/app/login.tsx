@@ -1,4 +1,5 @@
 import { Link, useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -8,30 +9,28 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const router = useRouter();
   const [errors, setErrors] = useState([]);
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/login`;
+  const url = `${process.env.EXPO_PUBLIC_API_URL}/login`;
 
-  const handleSubmit = () => {
-    const init = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password })
-    };
-    fetch(url, init)
-      .then(response => {
-        if (response.status === 200 || response.status === 401) {
-          return response.json();
-        } else {
-          return Promise.reject(`Unexpected Status Error: ${response.status}`);
-        }
-      }).then(data => {
-        if (data.userId) {
-          router.push("/(tabs)/not-started");
-        } else {
-          setErrors(data);
-        }
-      }).catch(console.log);
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (response.status !== 200 && response.status !== 401) {
+        throw new Error(`Unexpected status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.token) {
+        await SecureStore.setItemAsync("token", data.token);
+        router.push("/(tabs)/not-started");
+      } else {
+        setErrors(data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   return (
