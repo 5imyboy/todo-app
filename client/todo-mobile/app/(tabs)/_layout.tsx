@@ -1,15 +1,17 @@
-import { Link, Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { Button } from "react-native";
 
-const logoutButton = (
-  <Link href="/login" push asChild>
-    <Button title="Logout" />
-  </Link>
-);
-
 export default function TabLayout() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await SecureStore.deleteItemAsync("token");
+    router.replace("/login");
+  };
+
   return (
-    <Tabs screenOptions={{ headerRight: () => logoutButton }}>
+    <Tabs screenOptions={{ headerRight: () => <Button title="Logout" onPress={handleLogout} /> }}>
       <Tabs.Screen name="not-started" options={{ title: "Not Started" }} />
       <Tabs.Screen name="in-progress" options={{ title: "In Progress" }} />
       <Tabs.Screen name="finished" options={{ title: "Finished" }} />
