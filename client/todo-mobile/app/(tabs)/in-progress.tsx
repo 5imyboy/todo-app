@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { Text, View } from "react-native";
 
@@ -9,32 +10,34 @@ interface Task {
   userId: number;
 }
 
-async function loadTasks(url: string) {
-  try {
-    const token = await SecureStore.getItemAsync("token");
-    const response = await fetch(`${url}`, {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },
-    });
-    if (!(response.status === 200 || response.status === 400)) {
-      return Promise.reject(`Unexpected Status Code: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (e) {
-    console.error(e);
-  }
-}
-
 export default function In_Progress() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const url = `${process.env.EXPO_PUBLIC_API_URL}/task/status/in-progress`;
+  const router = useRouter();
 
   useEffect(() => {
-    const loadAll = async () => {
-      await loadTasks(url).then(setTasks);
-    }
-    loadAll();
+    const loadTasks = async () => {
+      try {
+        const token = await SecureStore.getItemAsync("token");
+        const response = await fetch(url, {
+          method: "GET",
+          headers: { "Authorization": `Bearer ${token}` },
+        });
+        if (response.status === 401 || response.status === 403) {
+          await SecureStore.deleteItemAsync("token");
+          router.replace("/login");
+          return;
+        }
+        if (response.status !== 200) {
+          console.error("Unexpected status:", response.status);
+          return;
+        }
+        setTasks(await response.json());
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadTasks();
   }, []);
 
   return (
