@@ -1,0 +1,77 @@
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
+export interface Task {
+  taskId: number;
+  userId: number;
+  title: string;
+  description: string;
+  status: string;
+  hours: number;
+  minutes: number;
+}
+
+export default function TaskCard({ task }: { task: Task }) {
+  const time = task.hours !== 0
+    ? `${task.hours} hours`
+    : `${task.minutes} minutes`;
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.title}>{task.title}</Text>
+      <Text style={styles.notes}>Notes: {task.description}</Text>
+      <Text style={styles.time}>Time: {time}</Text>
+      <View style={styles.buttonRow}>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>←</Text>
+        </Pressable>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>→</Text>
+        </Pressable>
+        <Pressable style={[styles.button, styles.deleteButton]}>
+          <Text style={styles.buttonText}>x</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "rgba(250, 250, 250, 0.25)",
+    borderRadius: 12,
+    padding: 12,
+    marginVertical: 6,
+    marginHorizontal: 12,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  notes: {
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  time: {
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  button: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  deleteButton: {
+    borderColor: "#f87171",
+  },
+  buttonText: {
+    fontWeight: "bold",
+  },
+});

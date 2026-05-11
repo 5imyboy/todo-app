@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { Text, View } from "react-native";
-
-interface Task {
-  taskId: number;
-  title: string;
-  status: string;
-  userId: number;
-}
+import { ScrollView } from "react-native";
+import TaskCard, { Task } from "../../components/TaskCard";
 
 export default function Not_Started() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -41,19 +35,8 @@ export default function Not_Started() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-      <View className="row-span-10 h-full w-8/10 grid grid-cols-3 flex flex-row gap-[32px] items-center rounded">
-        <View className="bg-sky-400 h-full col-span-1 rounded-2xl">
-          {tasks.map(t => <Text key={t.taskId}> {t.title} </Text>)}
-        </View>
-      </View>
-    </View>
+    <ScrollView>
+      {tasks.map(t => <TaskCard key={t.taskId} task={t} />)}
+    </ScrollView>
   );
 }
