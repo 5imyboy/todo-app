@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import {
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -19,17 +19,11 @@ const EMPTY_FORM = {
   status: "NOT_STARTED",
 };
 
-export default function AddTaskModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+export default function AddTask() {
+  const router = useRouter();
   const [form, setForm] = useState(EMPTY_FORM);
   const [isHours, setIsHours] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
-
-  const handleClose = () => {
-    setForm(EMPTY_FORM);
-    setIsHours(false);
-    setErrors([]);
-    onClose();
-  };
 
   const toggleTimeUnit = (value: boolean) => {
     setIsHours(value);
@@ -57,7 +51,7 @@ export default function AddTaskModal({ visible, onClose }: { visible: boolean; o
         }
       );
       if (response.status === 201) {
-        handleClose();
+        router.back();
         return;
       }
       if (response.status === 400) {
@@ -71,78 +65,63 @@ export default function AddTaskModal({ visible, onClose }: { visible: boolean; o
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
-      <View style={styles.overlay}>
-        <View style={styles.sheet}>
-          <ScrollView keyboardShouldPersistTaps="handled">
+    <ScrollView keyboardShouldPersistTaps="handled" style={styles.container}>
 
-            {errors.length > 0 && (
-              <View style={styles.errorBox}>
-                {errors.map(e => <Text key={e} style={styles.errorText}>{e}</Text>)}
-              </View>
-            )}
-
-            <TextInput
-              style={styles.titleInput}
-              placeholder="Title"
-              value={form.title}
-              onChangeText={text => setForm(prev => ({ ...prev, title: text }))}
-              maxLength={100}
-            />
-
-            <TextInput
-              style={styles.notesInput}
-              placeholder="Notes"
-              value={form.description}
-              onChangeText={text => setForm(prev => ({ ...prev, description: text }))}
-              multiline
-              numberOfLines={3}
-              maxLength={1024}
-            />
-
-            <View style={styles.timeRow}>
-              <TextInput
-                style={styles.timeInput}
-                placeholder={isHours ? "Hours" : "Minutes"}
-                keyboardType="numeric"
-                value={String(isHours ? form.hours || "" : form.minutes || "")}
-                onChangeText={text => {
-                  const n = parseInt(text) || 0;
-                  setForm(prev => isHours ? { ...prev, hours: n } : { ...prev, minutes: n });
-                }}
-              />
-              <Text style={styles.timeLabel}>{isHours ? "hours" : "minutes"}</Text>
-              <Switch value={isHours} onValueChange={toggleTimeUnit} />
-            </View>
-
-            <View style={styles.buttonRow}>
-              <Pressable style={[styles.button, styles.cancelButton]} onPress={handleClose}>
-                <Text style={styles.buttonText}>x</Text>
-              </Pressable>
-              <Pressable style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>✓</Text>
-              </Pressable>
-            </View>
-
-          </ScrollView>
+      {errors.length > 0 && (
+        <View style={styles.errorBox}>
+          {errors.map(e => <Text key={e} style={styles.errorText}>{e}</Text>)}
         </View>
+      )}
+
+      <TextInput
+        style={styles.titleInput}
+        placeholder="Title"
+        value={form.title}
+        onChangeText={text => setForm(prev => ({ ...prev, title: text }))}
+        maxLength={100}
+      />
+
+      <TextInput
+        style={styles.notesInput}
+        placeholder="Notes"
+        value={form.description}
+        onChangeText={text => setForm(prev => ({ ...prev, description: text }))}
+        multiline
+        numberOfLines={3}
+        maxLength={1024}
+      />
+
+      <View style={styles.timeRow}>
+        <TextInput
+          style={styles.timeInput}
+          placeholder={isHours ? "Hours" : "Minutes"}
+          keyboardType="numeric"
+          value={String(isHours ? form.hours || "" : form.minutes || "")}
+          onChangeText={text => {
+            const n = parseInt(text) || 0;
+            setForm(prev => isHours ? { ...prev, hours: n } : { ...prev, minutes: n });
+          }}
+        />
+        <Text style={styles.timeLabel}>{isHours ? "hours" : "minutes"}</Text>
+        <Switch value={isHours} onValueChange={toggleTimeUnit} />
       </View>
-    </Modal>
+
+      <View style={styles.buttonRow}>
+        <Pressable style={[styles.button, styles.cancelButton]} onPress={() => router.back()}>
+          <Text style={styles.buttonText}>x</Text>
+        </Pressable>
+        <Pressable style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>✓</Text>
+        </Pressable>
+      </View>
+
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-  sheet: {
-    backgroundColor: "white",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+  container: {
     padding: 20,
-    paddingBottom: 40,
   },
   errorBox: {
     borderWidth: 1,

@@ -1,12 +1,9 @@
-import { useState } from "react";
 import { Tabs, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
-import AddTaskModal from "../../components/AddTaskModal";
 
 export default function TabLayout() {
   const router = useRouter();
-  const [modalVisible, setModalVisible] = useState(false);
 
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync("token");
@@ -21,11 +18,9 @@ export default function TabLayout() {
         <Tabs.Screen name="finished" options={{ title: "Finished" }} />
       </Tabs>
 
-      <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
+      <Pressable style={styles.addButton} onPress={() => router.push("/add-task")}>
         <Text style={styles.addButtonText}>+</Text>
       </Pressable>
-
-      <AddTaskModal visible={modalVisible} onClose={() => setModalVisible(false)} />
     </View>
   );
 }
