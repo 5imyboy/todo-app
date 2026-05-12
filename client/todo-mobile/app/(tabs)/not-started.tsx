@@ -39,7 +39,7 @@ export default function Not_Started() {
 
   return (
     <ScrollView>
-      {tasks.map(t => <TaskCard key={t.taskId} task={t} />)}
+      {tasks.map(t => <TaskCard key={t.taskId} task={t} onDelete={(id) => setTasks(prev => prev.filter(t => t.taskId !== id))} />)}
     </ScrollView>
   );
 }

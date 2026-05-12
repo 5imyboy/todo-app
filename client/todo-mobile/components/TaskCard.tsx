@@ -1,3 +1,4 @@
+import * as SecureStore from "expo-secure-store";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export interface Task {
@@ -10,10 +11,34 @@ export interface Task {
   minutes: number;
 }
 
-export default function TaskCard({ task }: { task: Task }) {
+export default function TaskCard({ task, onDelete }: { task: Task; onDelete: (taskId: number) => void }) {
   const time = task.hours !== 0
     ? `${task.hours} hours`
     : `${task.minutes} minutes`;
+
+  const handleDelete = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/task/delete/${task.taskId}`,
+        {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` },
+        }
+      );
+      if (response.status === 204) {
+        onDelete(task.taskId);
+        return;
+      }
+      if (response.status === 404) {
+        console.error("Task not found:", task.taskId);
+        return;
+      }
+      console.error("Unexpected status:", response.status);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <View style={styles.card}>
@@ -27,7 +52,7 @@ export default function TaskCard({ task }: { task: Task }) {
         <Pressable style={styles.button}>
           <Text style={styles.buttonText}>→</Text>
         </Pressable>
-        <Pressable style={[styles.button, styles.deleteButton]}>
+        <Pressable style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
           <Text style={styles.buttonText}>x</Text>
         </Pressable>
       </View>
