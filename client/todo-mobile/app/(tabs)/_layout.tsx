@@ -18,7 +18,23 @@ export default function TabLayout() {
         <Tabs.Screen name="finished" options={{ title: "Finished" }} />
       </Tabs>
 
-      <Pressable style={styles.addButton} onPress={() => router.push("/add-task")}>
+      <Pressable 
+        style={styles.addButton} 
+        onPress={() => router.push({ 
+          pathname: "/task-form", 
+          params: { 
+            task: JSON.stringify({ 
+              taskId: 0, 
+              userId: 0, 
+              title: "", 
+              description: "", 
+              status: "NOT_STARTED", 
+              hours: 0, 
+              minutes: 0 
+            }) 
+          } 
+        })}
+      >
         <Text style={styles.addButtonText}>+</Text>
       </Pressable>
     </View>

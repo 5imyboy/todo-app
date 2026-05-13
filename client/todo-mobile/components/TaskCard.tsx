@@ -1,4 +1,5 @@
 import * as SecureStore from "expo-secure-store";
+import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export interface Task {
@@ -79,8 +80,13 @@ export default function TaskCard({
     }
   };
 
+  const router = useRouter();
+
   return (
-    <View style={styles.card}>
+    <Pressable
+      style={styles.card}
+      onLongPress={() => router.push({ pathname: "/task-form", params: { task: JSON.stringify(task) } })}
+    >
       <Text style={styles.title}>{task.title}</Text>
       <Text style={styles.notes}>Notes: {task.description}</Text>
       <Text style={styles.time}>Time: {time}</Text>
@@ -95,7 +101,7 @@ export default function TaskCard({
           <Text style={styles.buttonText}>x</Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

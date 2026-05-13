@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import {
   Pressable,
@@ -10,19 +10,16 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { Task } from "../components/TaskCard";
 
-const EMPTY_FORM = {
-  title: "",
-  description: "",
-  hours: 0,
-  minutes: 0,
-  status: "NOT_STARTED",
-};
-
-export default function AddTask() {
+export default function TaskForm() {
   const router = useRouter();
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [isHours, setIsHours] = useState(false);
+  const { task: taskParam } = useLocalSearchParams<{ task: string }>();
+  const existing: Task = JSON.parse(taskParam);
+  const isNewTask = existing.taskId === 0;
+
+  const [form, setForm] = useState(existing);
+  const [isHours, setIsHours] = useState(existing.hours !== 0);
   const [errors, setErrors] = useState<string[]>([]);
 
   const toggleTimeUnit = (value: boolean) => {
@@ -40,9 +37,11 @@ export default function AddTask() {
     try {
       const token = await SecureStore.getItemAsync("token");
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/task/add`,
+        isNewTask
+          ? `${process.env.EXPO_PUBLIC_API_URL}/task/add`
+          : `${process.env.EXPO_PUBLIC_API_URL}/task/update/${form.taskId}`,
         {
-          method: "POST",
+          method: isNewTask ? "POST" : "PUT",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
@@ -50,7 +49,8 @@ export default function AddTask() {
           body: JSON.stringify(form),
         }
       );
-      if (response.status === 201) {
+      const successStatus = isNewTask ? 201 : 204;
+      if (response.status === successStatus) {
         router.back();
         return;
       }
@@ -66,6 +66,7 @@ export default function AddTask() {
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled" style={styles.container}>
+      <Stack.Screen options={{ title: isNewTask ? "Add Task" : "Edit Task" }} />
 
       {errors.length > 0 && (
         <View style={styles.errorBox}>
