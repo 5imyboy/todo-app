@@ -39,7 +39,14 @@ export default function Finished() {
 
   return (
     <ScrollView>
-      {tasks.map(t => <TaskCard key={t.taskId} task={t} onDelete={(id) => setTasks(prev => prev.filter(t => t.taskId !== id))} />)}
+      {tasks.map(t => (
+        <TaskCard
+          key={t.taskId}
+          task={t}
+          onDelete={(id) => setTasks(prev => prev.filter(t => t.taskId !== id))}
+          onStatusChange={(updated) => setTasks(prev => prev.filter(t => t.taskId !== updated.taskId))}
+        />
+      ))}
     </ScrollView>
   );
 }

@@ -11,10 +11,49 @@ export interface Task {
   minutes: number;
 }
 
-export default function TaskCard({ task, onDelete }: { task: Task; onDelete: (taskId: number) => void }) {
+const STATUS_ORDER = ["NOT_STARTED", "IN_PROGRESS", "COMPLETED"];
+
+export default function TaskCard({
+  task,
+  onDelete,
+  onStatusChange,
+}: {
+  task: Task;
+  onDelete: (taskId: number) => void;
+  onStatusChange: (updatedTask: Task) => void;
+}) {
   const time = task.hours !== 0
     ? `${task.hours} hours`
     : `${task.minutes} minutes`;
+
+  const handleStatusChange = async (forward: boolean) => {
+    const currentStatusId = STATUS_ORDER.indexOf(task.status);
+    const newStatusId = forward ? currentStatusId + 1 : currentStatusId - 1;
+    if (newStatusId < 0 || newStatusId >= STATUS_ORDER.length) return;
+
+    const updatedTask = { ...task, status: STATUS_ORDER[newStatusId] };
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/task/update/${task.taskId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedTask),
+        }
+      );
+      if (response.status === 204) {
+        onStatusChange(updatedTask);
+        return;
+      }
+      console.error("Unexpected status:", response.status);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleDelete = async () => {
     try {
@@ -46,10 +85,10 @@ export default function TaskCard({ task, onDelete }: { task: Task; onDelete: (ta
       <Text style={styles.notes}>Notes: {task.description}</Text>
       <Text style={styles.time}>Time: {time}</Text>
       <View style={styles.buttonRow}>
-        <Pressable style={styles.button}>
+        <Pressable style={styles.button} onPress={() => handleStatusChange(false)}>
           <Text style={styles.buttonText}>←</Text>
         </Pressable>
-        <Pressable style={styles.button}>
+        <Pressable style={styles.button} onPress={() => handleStatusChange(true)}>
           <Text style={styles.buttonText}>→</Text>
         </Pressable>
         <Pressable style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
