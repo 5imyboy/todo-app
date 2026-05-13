@@ -1,7 +1,7 @@
 import { Link, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Login() {
 
@@ -34,39 +34,44 @@ export default function Login() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Todo List</Text>
-      <Text style={styles.subtitle}>Login:</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Todo List</Text>
+        <Text style={styles.subtitle}>Login:</Text>
 
-      {errors.length > 0 && (
-        <View style={styles.errorBox}>
-          {errors.map(e => <Text key={e} style={styles.errorText}>{e}</Text>)}
-        </View>
-      )}
+        {errors.length > 0 && (
+          <View style={styles.errorBox}>
+            {errors.map(e => <Text key={e} style={styles.errorText}>{e}</Text>)}
+          </View>
+        )}
 
-      <View style={styles.form}>
-        <Text>Email address:</Text>
-        <TextInput
-          style={styles.input}
-          id="email"
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          defaultValue={email}
-        />
-        <Text>Password:</Text>
-        <TextInput
-          style={styles.input}
-          id="password"
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <View style={styles.buttonRow}>
-          <Button title="Login" onPress={handleSubmit} />
-          <Link href="/(tabs)/not-started">New User?</Link>
+        <View style={styles.form}>
+          <Text>Email address:</Text>
+          <TextInput
+            style={styles.input}
+            id="email"
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            defaultValue={email}
+          />
+          <Text>Password:</Text>
+          <TextInput
+            style={styles.input}
+            id="password"
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+          <View style={styles.buttonRow}>
+            <Button title="Login" onPress={handleSubmit} />
+            <Link href="/(tabs)/not-started">New User?</Link>
+          </View>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
