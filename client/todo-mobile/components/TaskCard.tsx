@@ -84,11 +84,11 @@ export default function TaskCard({
 
   return (
     <Pressable
-      style={styles.card}
+      style={({ pressed }) => [styles.card, pressed && { backgroundColor: "rgba(80, 185, 255, 0.9)" }]}
       onLongPress={() => router.push({ pathname: "/task-form", params: { task: JSON.stringify(task) } })}
     >
       <Text style={styles.title}>{task.title}</Text>
-      <Text style={styles.notes}>Notes: {task.description}</Text>
+      <Text style={styles.notes}>{task.description}</Text>
       <Text style={styles.time}>Time: {time}</Text>
       <View style={styles.buttonRow}>
         <Pressable style={styles.button} onPress={() => handleStatusChange(false)}>
@@ -107,7 +107,7 @@ export default function TaskCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "rgba(250, 250, 250, 0.25)",
+    backgroundColor: "rgba(142, 214, 255, 0.81)",
     borderRadius: 12,
     padding: 12,
     marginVertical: 6,
