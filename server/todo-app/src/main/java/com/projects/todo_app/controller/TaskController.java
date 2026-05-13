@@ -49,6 +49,11 @@ public class TaskController {
 
     @GetMapping("/task/status/{statusString}")
     public ResponseEntity<?> findTasksByStatus(@PathVariable String statusString) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         Status status;
         switch (statusString) {
             case "not-started":
@@ -63,7 +68,7 @@ public class TaskController {
             default:
                 return new ResponseEntity<>("Invalid Status", HttpStatus.BAD_REQUEST);
         }
-        List<Task> tasks = service.findByStatus(status);
+        List<Task> tasks = service.findByUserIdAndStatus(user.getUserId(), status);
         return ResponseEntity.ok(tasks);
     }
 

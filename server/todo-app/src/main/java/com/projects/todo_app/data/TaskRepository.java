@@ -10,7 +10,7 @@ public interface TaskRepository {
 
     List<Task> findByUserId(int userId);
 
-    List<Task> findByStatus(Status status);
+    List<Task> findByUserIdAndStatus(int userId, Status status);
 
     Task findById(int taskId);
 

@@ -108,18 +108,20 @@ class TaskControllerTest {
 
     @Test
     void shouldFindBySection() throws Exception {
-        List<Task> completed = List.of(TASKS.get(2));
+        when(repository.findByUserIdAndStatus(1, Status.COMPLETED)).thenReturn(List.of(TASKS.get(2)));
 
-        ObjectMapper mapper = new ObjectMapper();
-        String expectedJson = mapper.writeValueAsString(completed);
-
-        when(repository.findByStatus(Status.COMPLETED)).thenReturn(completed);
-
-        mvc.perform(get("/api/task/status/completed")
+        String result = mvc.perform(get("/api/task/status/completed")
                         .cookie(new Cookie("token", token)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedJson));
+                .andReturn().getResponse().getContentAsString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        Task[] tasks = mapper.readValue(result, Task[].class);
+        for (Task task : tasks) {
+            assertEquals(1, task.getUserId());
+            assertEquals(Status.COMPLETED, task.getStatus());
+        }
     }
 
     @Test

@@ -46,9 +46,9 @@ public class TaskJdbcTemplateRepository implements TaskRepository {
     }
 
     @Override
-    public List<Task> findByStatus(Status status) {
-        final String sql = "select task_id, user_id, title, `description`, `status`, hours, minutes from task where status = ?";
-        return jdbcTemplate.query(sql, mapper, Status.titleToString(status));
+    public List<Task> findByUserIdAndStatus(int userId, Status status) {
+        final String sql = "select task_id, user_id, title, `description`, `status`, hours, minutes from task where user_id = ? and status = ?";
+        return jdbcTemplate.query(sql, mapper, userId, Status.titleToString(status));
     }
 
     @Override

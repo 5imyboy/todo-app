@@ -27,8 +27,8 @@ public class TaskService {
         return repository.findByUserId(userId);
     }
 
-    public List<Task> findByStatus(Status status) {
-        return repository.findByStatus(status);
+    public List<Task> findByUserIdAndStatus(int userId, Status status) {
+        return repository.findByUserIdAndStatus(userId, status);
     }
 
     public Task findById(int taskId) {

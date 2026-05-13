@@ -64,13 +64,14 @@ class TaskJdbcTemplateRepositoryTest {
     }
 
     @Test
-    void shouldFindByStatus() {
-        List<Task> actual = repository.findByStatus(Status.IN_PROGRESS);
+    void shouldFindByUserIdAndStatus() {
+        List<Task> actual = repository.findByUserIdAndStatus(1, Status.IN_PROGRESS);
         assertNotNull(actual);
 
         for (Task task: actual) {
             assertNotEquals(0, task.getTaskId());
             assertNotNull(task.getTitle());
+            assertEquals(1, task.getUserId());
             assertEquals(Status.IN_PROGRESS, task.getStatus());
         }
     }
