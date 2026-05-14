@@ -1,37 +1,48 @@
-import { Link, useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
-import { Button, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { Link, useRouter } from "expo-router";
+import {
+  Button,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
-export default function Login() {
-
+export default function Register() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
-  const [errors, setErrors] = useState([]);
-  const url = `${process.env.EXPO_PUBLIC_API_URL}/login`;
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const url = `${process.env.EXPO_PUBLIC_API_URL}/register`;
 
   const handleSubmit = async () => {
+    if (password !== confirmPassword) {
+      setErrors(["Passwords do not match"]);
+      return;
+    }
+
     try {
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      if (response.status !== 200 && response.status !== 401) {
-        throw new Error(`Unexpected status: ${response.status}`);
+      if (response.status === 201) {
+        router.replace("/login");
+        return;
       }
-      const data = await response.json();
-      if (data.token) {
-        await SecureStore.setItemAsync("token", data.token);
-        router.push("/(tabs)/not-started");
-      } else {
-        setErrors(data);
+      if (response.status === 400) {
+        setErrors(await response.json());
+        return;
       }
+      console.error("Unexpected status:", response.status);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -40,7 +51,7 @@ export default function Login() {
     >
       <View style={styles.container}>
         <Text style={styles.title}>Todo List</Text>
-        <Text style={styles.subtitle}>Login:</Text>
+        <Text style={styles.subtitle}>Register:</Text>
 
         {errors.length > 0 && (
           <View style={styles.errorBox}>
@@ -52,23 +63,28 @@ export default function Login() {
           <Text>Email address:</Text>
           <TextInput
             style={styles.input}
-            id="email"
+            value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
-            defaultValue={email}
           />
           <Text>Password:</Text>
           <TextInput
             style={styles.input}
-            id="password"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
+          <Text>Confirm Password:</Text>
+          <TextInput
+            style={styles.input}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+          />
           <View style={styles.buttonRow}>
-            <Button title="Login" onPress={handleSubmit} />
-            <Link href="/register">New User?</Link>
+            <Button title="Register" onPress={handleSubmit} />
+            <Link href="/login">Returning User?</Link>
           </View>
         </View>
       </View>
