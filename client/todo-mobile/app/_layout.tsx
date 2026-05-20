@@ -1,22 +1,9 @@
-import { Stack, useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
-import { useEffect } from "react";
+import { Stack } from "expo-router";
 
 export default function RootLayout() {
-  const router = useRouter();
-
-  useEffect(() => {
-    SecureStore.getItemAsync("token").then(token => {
-      if (token) {
-        router.replace("/(tabs)/not-started");
-      } else {
-        router.replace("/login");
-      }
-    });
-  }, []);
-
   return (
     <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ title: "Login" }} />
       <Stack.Screen name="register" options={{ title: "Register" }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

@@ -50,6 +50,12 @@
         "projectId": "fd6aab1d-b74b-49d4-9077-ef6975d2236b"
       }
     },
-    "owner": "simys-projects"
+    "owner": "simys-projects",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fd6aab1d-b74b-49d4-9077-ef6975d2236b"
+    }
   }
 }
