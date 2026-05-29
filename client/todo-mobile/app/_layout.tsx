@@ -1,6 +1,12 @@
 import { Stack } from "expo-router";
+import { useEffect } from "react";
+import { initDB } from "../lib/db";
 
 export default function RootLayout() {
+  useEffect(() => {
+    initDB().catch(e => console.error("DB init failed:", e));
+  }, []);
+
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
