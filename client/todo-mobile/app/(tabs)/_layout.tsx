@@ -1,30 +1,30 @@
 import { Tabs, useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function TabLayout() {
   const router = useRouter();
+  const { token, setToken } = useAuth();
   const ICON_SIZE = 50;
-  const NULL_TASK = { 
-    task: JSON.stringify({ 
-      taskId: 0, 
-      userId: 0, 
-      title: "", 
-      description: "", 
-      status: "NOT_STARTED", 
-      hours: 0, 
-      minutes: 0 
-    }) 
-  } 
+  const NULL_TASK = {
+    task: JSON.stringify({
+      taskId: 0,
+      userId: 0,
+      title: "",
+      description: "",
+      status: "NOT_STARTED",
+      hours: 0,
+      minutes: 0
+    })
+  };
 
-  const handleLogout = async () => {
-    await SecureStore.deleteItemAsync("token");
-    router.replace("/login");
+  const handleLogout = () => {
+    setToken(null);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <Tabs screenOptions={{ 
+      <Tabs screenOptions={{
         headerRight: () => (
           <View style={{flexDirection: "row", gap: 8 }}>
             <Pressable
@@ -36,7 +36,10 @@ export default function TabLayout() {
             >
               <Text style={styles.addButtonText}>+</Text>
             </Pressable>
-            <Button title="Logout" onPress={handleLogout} /> 
+            {token
+              ? <Button title="Logout" onPress={handleLogout} />
+              : <Button title="Sign In" onPress={() => router.push("/login")} />
+            }
           </View>
         )
       }}>

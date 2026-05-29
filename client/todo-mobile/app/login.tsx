@@ -1,6 +1,6 @@
 import { Link, useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { Button, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Login() {
@@ -8,6 +8,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { setToken } = useAuth();
   const [errors, setErrors] = useState([]);
   const url = `${process.env.EXPO_PUBLIC_API_URL}/login`;
 
@@ -23,8 +24,8 @@ export default function Login() {
       }
       const data = await response.json();
       if (data.token) {
-        await SecureStore.setItemAsync("token", data.token);
-        router.push("/(tabs)/not-started");
+        setToken(data.token);
+        router.back();
       } else {
         setErrors(data);
       }
