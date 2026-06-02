@@ -1,6 +1,7 @@
-import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useAuth } from "../contexts/AuthContext";
+import { updateTask, deleteTask } from "../lib/db";
 
 export interface Task {
   taskId: number;
@@ -27,6 +28,9 @@ export default function TaskCard({
     ? `${task.hours} hours`
     : `${task.minutes} minutes`;
 
+  const { token } = useAuth();
+  const router = useRouter();
+
   const handleStatusChange = async (forward: boolean) => {
     const currentStatusId = STATUS_ORDER.indexOf(task.status);
     const newStatusId = forward ? currentStatusId + 1 : currentStatusId - 1;
@@ -34,7 +38,11 @@ export default function TaskCard({
 
     const updatedTask = { ...task, status: STATUS_ORDER[newStatusId] };
     try {
-      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        await updateTask(updatedTask);
+        onStatusChange(updatedTask);
+        return;
+      }
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/task/update/${task.taskId}`,
         {
@@ -46,11 +54,11 @@ export default function TaskCard({
           body: JSON.stringify(updatedTask),
         }
       );
-      if (response.status === 204) {
-        onStatusChange(updatedTask);
+      if (response.status !== 204) {
+        console.error("Unexpected status:", response.status);
         return;
       }
-      console.error("Unexpected status:", response.status);
+      onStatusChange(updatedTask);
     } catch (e) {
       console.error(e);
     }
@@ -58,7 +66,11 @@ export default function TaskCard({
 
   const handleDelete = async () => {
     try {
-      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        await deleteTask(task.taskId);
+        onDelete(task.taskId);
+        return;
+      }
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/task/delete/${task.taskId}`,
         {
@@ -66,21 +78,19 @@ export default function TaskCard({
           headers: { "Authorization": `Bearer ${token}` },
         }
       );
-      if (response.status === 204) {
-        onDelete(task.taskId);
-        return;
-      }
       if (response.status === 404) {
         console.error("Task not found:", task.taskId);
         return;
       }
-      console.error("Unexpected status:", response.status);
+      if (response.status !== 204) {
+        console.error("Unexpected status:", response.status);
+        return;
+      }
+      onDelete(task.taskId);
     } catch (e) {
       console.error(e);
     }
   };
-
-  const router = useRouter();
 
   return (
     <Pressable

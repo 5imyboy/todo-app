@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
+import { useAuth } from "../contexts/AuthContext";
+import { addTask, updateTask } from "../lib/db";
 import {
   Pressable,
   ScrollView,
@@ -18,6 +19,7 @@ export default function TaskForm() {
   const existing: Task = JSON.parse(taskParam);
   const isNewTask = existing.taskId === 0;
 
+  const { token } = useAuth();
   const [form, setForm] = useState(existing);
   const [isHours, setIsHours] = useState(existing.hours !== 0);
   const [errors, setErrors] = useState<string[]>([]);
@@ -35,7 +37,15 @@ export default function TaskForm() {
 
   const handleSubmit = async () => {
     try {
-      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        if (isNewTask) {
+          await addTask(form);
+        } else {
+          await updateTask(form);
+        }
+        router.back();
+        return;
+      }
       const response = await fetch(
         isNewTask
           ? `${process.env.EXPO_PUBLIC_API_URL}/task/add`

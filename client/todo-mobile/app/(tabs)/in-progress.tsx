@@ -1,27 +1,29 @@
 import { useCallback, useState } from "react";
-import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
-import * as SecureStore from "expo-secure-store";
 import { ScrollView } from "react-native";
 import TaskCard, { Task } from "../../components/TaskCard";
+import { useAuth } from "../../contexts/AuthContext";
+import { getTasksByStatus } from "../../lib/db";
 
 export default function In_Progress() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const { token, setToken } = useAuth();
   const url = `${process.env.EXPO_PUBLIC_API_URL}/task/status/in-progress`;
-  const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
       const loadTasks = async () => {
         try {
-          const token = await SecureStore.getItemAsync("token");
+          if (!token) {
+            setTasks(await getTasksByStatus("IN_PROGRESS"));
+            return;
+          }
           const response = await fetch(url, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` },
           });
           if (response.status === 401 || response.status === 403) {
-            await SecureStore.deleteItemAsync("token");
-            router.replace("/login");
+            setToken(null);
             return;
           }
           if (response.status !== 200) {
@@ -34,7 +36,7 @@ export default function In_Progress() {
         }
       };
       loadTasks();
-    }, [])
+    }, [token])
   );
 
   return (
