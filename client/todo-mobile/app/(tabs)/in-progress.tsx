@@ -1,44 +1,9 @@
-import { useCallback, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
 import { ScrollView } from "react-native";
-import TaskCard, { Task } from "../../components/TaskCard";
-import { useAuth } from "../../contexts/AuthContext";
-import { getTasksByStatus } from "../../lib/db";
+import TaskCard from "../../components/TaskCard";
+import { loadTasksByStatus } from "../../hooks/useTasksByStatus";
 
 export default function In_Progress() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const { token, setToken } = useAuth();
-  const url = `${process.env.EXPO_PUBLIC_API_URL}/task/status/in-progress`;
-
-  useFocusEffect(
-    useCallback(() => {
-      const loadTasks = async () => {
-        try {
-          if (!token) {
-            setTasks(await getTasksByStatus("IN_PROGRESS"));
-            return;
-          }
-          const response = await fetch(url, {
-            method: "GET",
-            headers: { "Authorization": `Bearer ${token}` },
-          });
-          if (response.status === 401 || response.status === 403) {
-            setToken(null);
-            return;
-          }
-          if (response.status !== 200) {
-            console.error("Unexpected status:", response.status);
-            return;
-          }
-          setTasks(await response.json());
-        } catch (e) {
-          console.error(e);
-        }
-      };
-      loadTasks();
-    }, [token])
-  );
-
+  const { tasks, setTasks } = loadTasksByStatus("in-progress", "IN_PROGRESS");
   return (
     <ScrollView>
       {tasks.map(t => (

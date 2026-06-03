@@ -38,11 +38,7 @@ export default function TaskForm() {
   const handleSubmit = async () => {
     try {
       if (!token) {
-        if (isNewTask) {
-          await addTask(form);
-        } else {
-          await updateTask(form);
-        }
+        await (isNewTask ? addTask(form) : updateTask(form));
         router.back();
         return;
       }
