@@ -10,19 +10,21 @@ const AuthContext = createContext<AuthContextType>({ token: null, setToken: () =
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    SecureStore.getItemAsync("token").then(t => setToken(t));
+    SecureStore.getItemAsync("token").then(t => {
+      setToken(t);
+      setReady(true);
+    });
   }, []);
 
   const handleSetToken = (t: string | null) => {
     setToken(t);
-    if (t) {
-      SecureStore.setItemAsync("token", t);
-    } else {
-      SecureStore.deleteItemAsync("token");
-    }
+    t ? SecureStore.setItemAsync("token", t) : SecureStore.deleteItemAsync("token");
   };
+
+  if (!ready) return null;
 
   return (
     <AuthContext value={{ token, setToken: handleSetToken }}>
