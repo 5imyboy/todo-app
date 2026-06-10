@@ -1,6 +1,6 @@
 import { ScrollView } from "react-native";
 import TaskCard from "../../components/TaskCard";
-import { loadTasksByStatus } from "../../hooks/useTasksByStatus";
+import { loadTasksByStatus } from "../../hooks/loadTasksByStatus";
 
 export default function Not_Started() {
   const { tasks, setTasks } = loadTasksByStatus("not-started", "NOT_STARTED");

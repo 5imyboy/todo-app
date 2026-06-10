@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 import { Task } from "../components/TaskCard";
 import { useAuth } from "../contexts/AuthContext";
 import { getTasksByStatus } from "../lib/db";
@@ -12,6 +12,7 @@ export function loadTasksByStatus(apiSlug: string, dbStatus: string) {
   useFocusEffect(
     useCallback(() => {
       const loadTasks = async () => {
+        console.log("loadTasks fired, token:", token ? "exists" : "null");
         try {
           if (!token) {
             setTasks(await getTasksByStatus(dbStatus));
