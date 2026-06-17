@@ -5,6 +5,12 @@ use todo_test;
 drop table if exists task;
 drop table if exists `user`;
 
+create table `user` (
+	user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email varchar(256) not null unique,
+	password_hash varchar(512) not null
+);
+
 create table task (
 	task_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
@@ -12,13 +18,8 @@ create table task (
     `description` varchar(1024),
 	`status` ENUM('NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'),
     hours int not null default(0),
-    minutes int not null default(0)
-);
-
-create table `user` (
-	user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    email varchar(256) not null unique,
-	password_hash varchar(512) not null
+    minutes int not null default(0),
+    FOREIGN KEY (user_id) REFERENCES `user`(user_id) ON DELETE CASCADE
 );
 
 delimiter //

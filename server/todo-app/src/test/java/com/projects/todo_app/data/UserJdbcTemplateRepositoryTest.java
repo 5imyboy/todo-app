@@ -1,11 +1,14 @@
 package com.projects.todo_app.data;
 
+import com.projects.todo_app.models.Task;
 import com.projects.todo_app.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +17,9 @@ class UserJdbcTemplateRepositoryTest {
 
     @Autowired
     UserJdbcTemplateRepository repository;
+
+    @Autowired
+    TaskJdbcTemplateRepository taskRepository;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -58,5 +64,18 @@ class UserJdbcTemplateRepositoryTest {
     @Test
     void shouldNotDeleteMissing() {
         assertFalse(repository.deleteById(999));
+    }
+
+    @Test
+    void shouldDeleteCascadesToTasks() {
+        User user = repository.add(new User(0, "cascade@test.com", "hash"));
+        jdbcTemplate.update(
+            "insert into task (user_id, title, `status`, hours, minutes) values (?, 'Cascade Task', 'NOT_STARTED', 0, 0)",
+            user.getUserId());
+
+        assertTrue(repository.deleteById(user.getUserId()));
+
+        List<Task> tasks = taskRepository.findByUserId(user.getUserId());
+        assertTrue(tasks.isEmpty());
     }
 }
