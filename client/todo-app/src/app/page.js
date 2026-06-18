@@ -47,7 +47,7 @@ export default function Login() {
 
   return (
     <>
-      <section className="container mx-auto max-w-m mt-12">
+      <main className="container mx-auto max-w-m mt-12">
         <div className="text-center mb-6">
           <h1 className="mb-4">Todo List</h1>
           <h2>Login:</h2>
@@ -90,16 +90,18 @@ export default function Login() {
               >
                 Login
               </button>
-              <Link
-                className="text-blue-600 underline ml-4"
-                href={"/register"}
-              >
+              <Link className="text-blue-600 underline ml-4" href={"/register"}>
                 New User?
               </Link>
             </div>
           </form>
         </div>
-      </section>
+      </main>
+      <footer className="fixed bottom-4 w-full flex justify-center">
+        <Link className="text-red-600 underline text-sm" href={"/delete-account"}>
+          Delete Account
+        </Link>
+      </footer>
     </>
   );
 }
