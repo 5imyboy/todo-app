@@ -1,9 +1,9 @@
 import { ScrollView } from "react-native";
 import TaskCard from "../../components/TaskCard";
-import { loadTasksByStatus } from "../../hooks/loadTasksByStatus";
+import { useTasksByStatus } from "../../hooks/useTasksByStatus";
 
 export default function In_Progress() {
-  const { tasks, setTasks } = loadTasksByStatus("in-progress", "IN_PROGRESS");
+  const { tasks, setTasks } = useTasksByStatus("in-progress", "IN_PROGRESS");
   return (
     <ScrollView>
       {tasks.map(t => (

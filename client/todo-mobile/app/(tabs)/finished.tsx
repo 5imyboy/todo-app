@@ -1,9 +1,9 @@
 import { ScrollView } from "react-native";
 import TaskCard from "../../components/TaskCard";
-import { loadTasksByStatus } from "../../hooks/loadTasksByStatus";
+import { useTasksByStatus } from "../../hooks/useTasksByStatus";
 
 export default function Finished() {
-  const { tasks, setTasks } = loadTasksByStatus("completed", "COMPLETED");
+  const { tasks, setTasks } = useTasksByStatus("completed", "COMPLETED");
   return (
     <ScrollView>
       {tasks.map(t => (

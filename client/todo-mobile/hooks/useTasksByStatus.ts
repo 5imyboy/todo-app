@@ -4,7 +4,7 @@ import { Task } from "../components/TaskCard";
 import { useAuth } from "../contexts/AuthContext";
 import { getTasksByStatus } from "../lib/db";
 
-export function loadTasksByStatus(apiSlug: string, dbStatus: string) {
+export function useTasksByStatus(apiSlug: string, dbStatus: string) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { token, setToken } = useAuth();
   const url = `${process.env.EXPO_PUBLIC_API_URL}/task/status/${apiSlug}`;
@@ -12,7 +12,6 @@ export function loadTasksByStatus(apiSlug: string, dbStatus: string) {
   useFocusEffect(
     useCallback(() => {
       const loadTasks = async () => {
-        console.log("loadTasks fired, token:", token ? "exists" : "null");
         try {
           if (!token) {
             setTasks(await getTasksByStatus(dbStatus));
