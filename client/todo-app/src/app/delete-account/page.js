@@ -63,7 +63,8 @@ export default function DeleteAccount() {
         <h1 className="mb-4">Todo List</h1>
         <h2>Delete Account</h2>
         <p className="text-gray-500 mt-2">
-          Enter your credentials to permanently delete your account and all associated data.
+          Enter your credentials to permanently delete your account and all data
+          stored with the mobile app Taskwave, and with this webpage.
           This action cannot be undone.
         </p>
       </div>
