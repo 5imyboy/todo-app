@@ -101,8 +101,8 @@ export default function Login() {
         <Link className="text-red-600 hover:text-red-700 underline text-sm px-2" href={"/delete-account"}>
           Delete Account
         </Link>
-        <Link className="text-gray-600 hover:text-gray-700 underline text-sm px-2" href={"/"}>
-          Back to Login
+        <Link className="text-gray-600 hover:text-gray-700 underline text-sm px-2" href={"/privacy-policy"}>
+          Privacy Policy
         </Link>
       </footer>
     </>
