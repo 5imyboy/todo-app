@@ -98,8 +98,11 @@ export default function Login() {
         </div>
       </main>
       <footer className="fixed bottom-4 w-full flex justify-center">
-        <Link className="text-red-600 underline text-sm" href={"/delete-account"}>
+        <Link className="text-red-600 hover:text-red-700 underline text-sm px-2" href={"/delete-account"}>
           Delete Account
+        </Link>
+        <Link className="text-gray-600 hover:text-gray-700 underline text-sm px-2" href={"/"}>
+          Back to Login
         </Link>
       </footer>
     </>
